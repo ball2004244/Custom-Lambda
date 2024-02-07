@@ -1,0 +1,8 @@
+version: '3'
+services:
+  custom-lambda:
+    build: .
+    ports:
+      - "9999:9999"
+    volumes:
+      - ./functions_store:/app/functions_store
