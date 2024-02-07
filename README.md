@@ -14,6 +14,11 @@ This project replicates the Hosting of AWS Lambda with Python and FastAPI, using
 - Allows install new dependencies without rebuilding the image
 
 ## Installation
+Before starting, you need to copy the `.env.example` file to `.env` and fill in the required environment variables.
+
+```bash
+cp .env.example .env
+```
 
 1. Docker
    To run the application, you need to have Docker and Docker Compose installed on your machine. You can install Docker from [here](https://docs.docker.com/get-docker/).
