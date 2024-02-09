@@ -35,7 +35,7 @@ def get_all_funcs() -> dict:
 
         all_funcs = get_funcs(target_dir='functions_store')
         res['data'] = {
-            'total': len(all_funcs),
+            'total': len(list(all_funcs.values())[0]),
             'functions': all_funcs
         }
     except Exception as e:
