@@ -1,19 +1,30 @@
+/* COLOR PALETTES: #345DA7, #3B8AC4, #4BB4DE, #EFDBCB */
 h1 {
   font-weight: bold;
   font-size: 30px;
+  color:#efdbcb;
+  text-align: center;
+}
+
+h2 {
+  font-weight: bold;
+  font-size: 25px;
+  text-align: center;
 }
 
 body {
   display: flex;
-  flex-direction: row;
   height: 100vh;
   width: 100vw;
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+  background-color: #efdbcb;
+  color: #345da7;
 }
 
-.tab {
+.tab,
+#edit-tab,
+#monitor-tab {
   height: 100%;
   width: 100%;
 }
@@ -25,14 +36,13 @@ body {
 }
 
 .left-bar {
+  padding: 10px 5px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   width: 300px;
   height: 100%;
-  background-color: #f4f4f4;
-  border-right: 1px solid black;
+  background-color: #345da7;
 }
 
 .left-bar > button {
@@ -41,14 +51,15 @@ body {
   width: 200px;
   font-size: 20px;
   font-weight: bold;
-  border: 1px solid black;
-  background-color: #f4f4f4;
+  border: none;
+  background-color: #3b8ac4;
+  color: #efdbcb;
   cursor: pointer;
 }
 
 .left-bar > button[active] {
-  background-color: #4caf50; /* Change to your preferred color */
-  color: white; /* Change the text color to contrast with the background */
+  background-color: #4bb4de;
+  color: #efdbcb;
 }
 
 #edit-tab {
@@ -68,50 +79,20 @@ body {
 
 .funcs-table {
   width: 100%;
-  border-collapse: collapse;
   margin: 10px;
-  border: 1px solid black;
+  border: #345da7 2px solid;
 }
 
-.funcs-table td, .funcs-table th {
-  border: 1px solid black;
+.funcs-table td,
+.funcs-table th {
   padding: 2px;
   margin: 2px;
+  border: #345da7 1px solid;
 }
 
 /* BEGIN: Add dark mode styles */
 .monaco-editor.vs-dark .monaco-editor-background,
-.monaco-editor.vs-dark .monaco-editor,
-.monaco-editor.vs-dark .monaco-editor .margin,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.vs,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.en,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.ja-hiragana,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.ja-katakana,
-.monaco-editor.vs-dark
-  .monaco-editor
-  .inputarea.ime-input.ja-half-width-katakana,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.zh-hans,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.zh-hant,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.ko,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.ru,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.ar,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.he,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.fa,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.ja,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.ja-hiragana,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.ja-katakana,
-.monaco-editor.vs-dark
-  .monaco-editor
-  .inputarea.ime-input.ja-half-width-katakana,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.zh-hans,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.zh-hant,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.ko,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.ru,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.ar,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.he,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.fa,
-.monaco-editor.vs-dark .monaco-editor .inputarea.ime-input.ja {
+.monaco-editor.vs-dark .monaco-editor {
   background-color: #1e1e1e;
 }
 /* END: Add dark mode styles */
