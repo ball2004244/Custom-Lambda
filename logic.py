@@ -5,6 +5,7 @@ import importlib.util
 import traceback
 import io
 import sys
+import os
 
 '''
 This file accounts for all the logic in the application
@@ -54,7 +55,7 @@ def add_func(func_name: str, new_func: str, target_dir: str) -> Union[str, None]
 
     # otherwise, get latest file name from last key in funcs
     target_file = list(funcs.keys())[-1] if funcs else 0
-    LINE_LIMIT = 1000
+    LINE_LIMIT = 10000
     write_mode = 'a'
 
     # check if the file have enough empty lines for new function
@@ -117,6 +118,7 @@ def invoke_func(func_name: str, params: list, target_dir: str, target_file: str)
     }
     return output
 
+
 def modify_func(func_name: str, new_func: str, target_dir: str, target_file: str) -> Union[str, None]:
     '''
     Modify a serverless function in a python file,
@@ -138,13 +140,14 @@ def modify_func(func_name: str, new_func: str, target_dir: str, target_file: str
                 start = i
             if f'#end-function: {func_name} with {FUNC_DELIMITER}' in line:
                 end = i
-                
+
     if start is None or end is None:
         return None
-        
+
     # replace old content with new one
     lines[start+1:end] = new_func.split('\n')
     return target_file
+
 
 def delete_func(func_name: str, target_dir: str, target_file: str) -> Union[str, None]:
     '''
@@ -167,13 +170,31 @@ def delete_func(func_name: str, target_dir: str, target_file: str) -> Union[str,
                 start = i
             if f'#end-function: {func_name} with {FUNC_DELIMITER}' in line:
                 end = i
-                
+
     if start is None or end is None:
         return None
-        
+
     # delete the function
     del lines[start:end+1]
     return target_file
+
+
+def install_libs(libs: List[str]) -> None:
+    '''
+    Install a list of libraries to the virtual environment
+    '''
+    for lib in libs:
+        os.system(f'pip install {lib}')
+
+
+def get_libs() -> List[str]:
+    '''
+    Get all installed libraries in the virtual environment
+    '''
+    os.system('pip freeze > requirements.txt')
+    with open('requirements.txt', 'r') as f:
+        return f.readlines()
+
 
 if __name__ == '__main__':
     # test invoke_func

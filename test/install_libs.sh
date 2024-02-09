@@ -1,0 +1,1 @@
+curl -X POST -H "Content-Type: application/json" -d '{"libs": ["requests", "numpy"]}' http://localhost:9999/api/libs

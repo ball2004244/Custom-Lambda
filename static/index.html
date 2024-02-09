@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Custom Lambda</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/loader.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="left-bar">
+      <button id="edit-btn" active>Edit Functions</button>
+      <button id="monitor-btn">Monitor</button>
+    </div>
+
+    <!-- <h1>Custom Lambda</h1> -->
+    <div id="edit-tab" class="tab">
+      <h2>Function Editor</h2>
+      <p>This tab allows you to edit and submit your custom lambda function</p>
+      <div id="monaco-container"></div>
+    </div>
+
+    <div id="monitor-tab" class="tab" hidden>
+      <h2>Monitor Function</h2>
+      <p>This tab allows you to view and execute saved lambda functions</p>
+      <div id="monitor-container"></div>
+    </div>
+
+
+    <script type="text/javascript" src="script.js"></script>
+  </body>
+</html>

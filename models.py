@@ -1,15 +1,24 @@
 from pydantic import BaseModel
+from typing import List
+
 
 class CreateFuncRequest(BaseModel):
     content: str
 
+
 class ExecFuncRequest(BaseModel):
-    params: list
-    target: str # a file that contains the function
-    
+    params: List[str]
+    target: str  # a file that contains the function
+
+
 class ModifyFuncRequest(BaseModel):
     content: str
     target: str
-    
+
+
 class DelFuncRequest(BaseModel):
     target: str
+
+
+class LibInstallRequest(BaseModel):
+    libs: List[str]

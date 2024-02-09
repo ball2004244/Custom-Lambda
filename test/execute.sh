@@ -6,4 +6,4 @@ json_data=$(jq -n \
                 --argjson params "$params" \
                 '{"params":$params, "target":$target}')
 
-curl -X POST -H "Content-Type: application/json" -d "$json_data" http://localhost:9999/execute/pascal_triangle
+curl -X POST -H "Content-Type: application/json" -d "$json_data" http://localhost:9999/api/execute/pascal_triangle
