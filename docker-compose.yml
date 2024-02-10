@@ -6,3 +6,5 @@ services:
       - "9999:9999"
     volumes:
       - ./functions_store:/app/functions_store
+volumes:
+  functions_store:

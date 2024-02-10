@@ -1,9 +1,17 @@
 from fastapi import FastAPI, APIRouter, responses
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from logic import get_funcs, add_func, invoke_func, modify_func, delete_func, install_libs, get_libs
 from models import CreateFuncRequest, ExecFuncRequest, ModifyFuncRequest, DelFuncRequest, LibInstallRequest
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # frontend static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -115,7 +123,10 @@ def add_new_func(func_name: str, func_request: CreateFuncRequest) -> dict:
     res = RESPONSE_TEMPLATE.copy()
     try:
         content = func_request.content
-        add_func(func_name, content, target_dir='functions_store')
+        output = add_func(func_name, content, target_dir='functions_store')
+
+        if output is None:
+            raise Exception('Function already exists')
 
         res['status'] = 'success'
         res['message'] = f'Successfully added function {func_name}'
