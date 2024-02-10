@@ -39,7 +39,7 @@ docker run -d -p 9999:9999 custom-lambda
 docker-compose up --build -d
 ```
 
-2. Pure Python
+3. Pure Python
    
    You can also run the application without Docker. You need to have Python 3.8 or later installed on your machine. Then, you can run the following command to install the dependencies and run the application:
 
