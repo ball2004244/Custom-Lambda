@@ -18,3 +18,10 @@ def get_py_files(target_dir: str) -> list:
     files = get_files(target_dir)
     py_files = [file for file in files if file.endswith('.py')]
     return py_files
+
+def create_dir(target_dir: str) -> None:
+    '''
+    Create a directory if it does not exist
+    '''
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)

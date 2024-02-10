@@ -3,6 +3,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from logic import get_funcs, add_func, invoke_func, modify_func, delete_func, install_libs, get_libs
 from models import CreateFuncRequest, ExecFuncRequest, ModifyFuncRequest, DelFuncRequest, LibInstallRequest
+from utils import create_dir
+
+create_dir('functions_store')
 
 app = FastAPI()
 app.add_middleware(
