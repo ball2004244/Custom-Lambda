@@ -2,7 +2,7 @@
 h1 {
   font-weight: bold;
   font-size: 30px;
-  color:#efdbcb;
+  color: #efdbcb;
   text-align: center;
 }
 
@@ -10,8 +10,12 @@ h2 {
   font-weight: bold;
   font-size: 25px;
   text-align: center;
+  margin: 10px;
 }
 
+p {
+  margin: 10px;
+}
 body {
   display: flex;
   height: 100vh;
@@ -19,7 +23,7 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
   background-color: #efdbcb;
-  color: #345da7;
+  color: #3b8ac4;
 }
 
 .tab,
@@ -29,10 +33,31 @@ body {
   width: 100%;
 }
 
-#monaco-container {
+#edit-tab > #func-name > #func-name-field {
+  padding: 5px;
+  width: 200px;
+  font-size: 18px;
+  border: 1px solid #3b8ac4;
+  background-color: #efdbcb;
+  color: #3b8ac4;
+  outline: none;
+  border-radius: 5px;
+}
+
+#edit-tab > #monaco-container {
   padding: 10px;
   width: 70%;
   height: 70%;
+}
+
+#edit-tab > #submit-btn {
+  margin: 20px;
+  padding: 10px;
+}
+
+#edit-tab > #submit-btn:hover {
+  background-color: #4bb4de;
+  color: #efdbcb;
 }
 
 .left-bar {
@@ -45,7 +70,7 @@ body {
   background-color: #345da7;
 }
 
-.left-bar > button {
+button {
   margin: 10px;
   padding: 10px;
   width: 200px;
@@ -55,9 +80,10 @@ body {
   background-color: #3b8ac4;
   color: #efdbcb;
   cursor: pointer;
+  border-radius: 5px;
 }
 
-.left-bar > button[active] {
+button[active] {
   background-color: #4bb4de;
   color: #efdbcb;
 }
