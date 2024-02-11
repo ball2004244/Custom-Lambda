@@ -9,4 +9,4 @@ def pascal_triangle(n):
     return triangle
 "
 json_content=$(jq -n --arg str "$content" '{"content":$str}')
-curl -X POST -H "Content-Type: application/json" -d "$json_content" http://localhost:9999/api/functions/pascal_triangle
+curl -X POST -H "Content-Type: application/json" -d "$json_content" http://localhost:9999/api/functions
