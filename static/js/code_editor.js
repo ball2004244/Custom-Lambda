@@ -1,7 +1,11 @@
 import config from "./config.js";
 
 /*
+ * #####
+ *
  * This file Setup Monaco Editor and Code Submission
+ *
+ * #####
  */
 const submitBtn = document.getElementById("submit-btn");
 const funcNameField = document.getElementById("func-name-field");
@@ -46,7 +50,7 @@ require(["vs/editor/editor.main"], () => {
 
       const data = await response.json();
       console.log(data);
-    //   clear the editor
+      //   clear the editor
       editor.setValue("# Your Python code here");
       funcNameField.value = "";
     } catch (error) {

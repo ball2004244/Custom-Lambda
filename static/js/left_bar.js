@@ -1,26 +1,41 @@
 /*
+ * #####
+ *
  * This file Setup Left Bar and Tab Switching
- */
-// Button elements
-const editBtn = document.getElementById("edit-btn");
-const monitorBtn = document.getElementById("monitor-btn");
+ *
+ * ##### 
+*/
 
-// Tab elements
-const editTab = document.getElementById("edit-tab");
-const monitorTab = document.getElementById("monitor-tab");
+// Button and Tab elements
+const buttons = {
+  edit: document.getElementById("edit-btn"),
+  monitor: document.getElementById("monitor-btn"),
+  libs: document.getElementById("libs-btn"),
+  add_lib: document.getElementById("add-lib-btn")
+};
 
-// Edit button click event
-editBtn.addEventListener("click", () => {
-  editBtn.setAttribute("active", "");
-  monitorBtn.removeAttribute("active");
-  editTab.style.display = "flex";
-  monitorTab.style.display = "none";
-});
+const tabs = {
+  edit: document.getElementById("edit-tab"),
+  monitor: document.getElementById("monitor-tab"),
+  libs: document.getElementById("libs-tab"),
+  add_lib: document.getElementById("add-lib-tab")
+};
 
-// Monitor button click event
-monitorBtn.addEventListener("click", () => {
-  monitorBtn.setAttribute("active", "");
-  editBtn.removeAttribute("active");
-  monitorTab.style.display = "flex";
-  editTab.style.display = "none";
-});
+// Function to handle button click
+const handleButtonClick = (buttonKey) => {
+  // Set active button and hide other tabs
+  for (let key in buttons) {
+    if (buttonKey === key) {
+      buttons[key].setAttribute("active", "");
+      tabs[key].style.display = "flex";
+    } else {
+      buttons[key].removeAttribute("active");
+      tabs[key].style.display = "none";
+    }
+  }
+}
+
+// Add event listeners
+for (let key in buttons) {
+  buttons[key].addEventListener("click", () => handleButtonClick(key));
+}

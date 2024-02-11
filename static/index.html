@@ -9,7 +9,9 @@
     <div class="left-bar">
       <h1>Custom Lambda</h1>
       <button id="edit-btn" active>Edit Functions</button>
-      <button id="monitor-btn">Monitor</button>
+      <button id="monitor-btn">Monitor Functions</button>
+      <button id="libs-btn">Installed Libs</button>
+      <button id="add-lib-btn">Add Libs</button>
     </div>
 
     <div id="edit-tab" class="tab">
@@ -30,10 +32,31 @@
       <div id="monitor-container"></div>
     </div>
 
+    <div id="libs-tab" class="tab" hidden>
+      <h2>Installed Libs</h2>
+      <p>This tab allows you to view and install python libraries</p>
+      <div id="libs-container"></div>
+    </div>
 
+    <div id="add-lib-tab" class="tab" hidden>
+      <h2>Add Libs</h2>
+      <p>This tab allows you to add python libraries</p>
+      <p id="lib-name"><strong>Library Name:</strong>
+        <input type="text" id="add-lib-input">
+      </p>
+
+      <div id="add-lib-container">
+        <button id="delete-libs-btn">Delete All</button>
+        <button id="upload-libs-btn">Upload to Server</button>
+      </div>
+      <ul id="libs-list"></ul>
+  
+    </div>
+  
     <script type="module" src="js/config.js"></script>
     <script type="module" src="js/left_bar.js"></script>
     <script type="module" src="js/code_editor.js"></script>
     <script type="module" src="js/monitor_tab.js"></script>
+    <script type="module" src="js/libs_tab.js"></script>
   </body>
 </html>

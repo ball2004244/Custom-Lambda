@@ -26,11 +26,26 @@ body {
   color: #3b8ac4;
 }
 
-.tab,
-#edit-tab,
-#monitor-tab {
+.left-bar {
+  padding: 10px 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 300px;
+  height: 100%;
+  background-color: #345da7;
+}
+
+.tab {
+  display: none;
+  flex-direction: column;
+  align-items: center;
   height: 100%;
   width: 100%;
+}
+
+#edit-tab {
+  display: flex;
 }
 
 #edit-tab > #func-name > #func-name-field {
@@ -60,14 +75,22 @@ body {
   color: #efdbcb;
 }
 
-.left-bar {
-  padding: 10px 5px;
+#add-lib-tab > #lib-name > #add-lib-input {
+  padding: 5px;
+  width: 200px;
+  font-size: 18px;
+  border: 1px solid #3b8ac4;
+  background-color: #efdbcb;
+  color: #3b8ac4;
+  outline: none;
+  border-radius: 5px;
+}
+
+#add-lib-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  width: 300px;
-  height: 100%;
-  background-color: #345da7;
+  justify-content: center;
 }
 
 button {
@@ -88,20 +111,6 @@ button[active] {
   color: #efdbcb;
 }
 
-#edit-tab {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Center vertically */
-  height: 100%;
-  width: 100%;
-}
-
-#monitor-tab {
-  flex-direction: column;
-  align-items: center;
-  height: 100%;
-  width: 100%;
-}
 
 .funcs-table {
   width: 100%;

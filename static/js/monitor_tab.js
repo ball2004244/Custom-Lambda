@@ -1,13 +1,17 @@
 import config from "./config.js";
-
 /*
+ * #####
+ *
  * This file handle the monitor tab
+ *
+ * #####
  */
+
 // Monitor container element
 const monitorContainer = document.getElementById("monitor-container");
 
 // Get all cloud functions
-async function fetchData() {
+const fetchData = async () => {
   try {
     const response = await fetch(`${config.API_URL}/functions`);
     const data = await response.json();
@@ -15,21 +19,21 @@ async function fetchData() {
   } catch (error) {
     console.error(error);
   }
-}
+};
 
 // Display data in as a table
-function displayData(funcs) {
+const displayData = (funcs) => {
   // Check if there are no functions
-//   then display a message
-    if (funcs === null || funcs === undefined) {
-        monitorContainer.innerHTML = "<p><strong>No functions found</strong></p>";
-        return;
-    }
+  //   then display a message
+  if (funcs === null || funcs === undefined) {
+    monitorContainer.innerHTML = "<p><strong>No functions found</strong></p>";
+    return;
+  }
 
-    if (Object.keys(funcs).length === 0) {
-        monitorContainer.innerHTML = "<p><strong>No functions found</strong></p>";
-        return;
-    }
+  if (Object.keys(funcs).length === 0) {
+    monitorContainer.innerHTML = "<p><strong>No functions found</strong></p>";
+    return;
+  }
   const table = document.createElement("table");
   table.classList.add("funcs-table");
 
@@ -63,13 +67,13 @@ function displayData(funcs) {
     table.appendChild(row);
   });
 
-  // Clear the previous table
+  // Replace previous table with new table
   while (monitorContainer.firstChild) {
     monitorContainer.removeChild(monitorContainer.firstChild);
   }
 
   monitorContainer.appendChild(table);
-}
+};
 
 // Fetch and display data every 5 seconds
 setInterval(async () => {

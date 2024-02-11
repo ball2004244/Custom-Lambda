@@ -183,7 +183,24 @@ def install_libs(libs: List[str]) -> None:
     '''
     Install a list of libraries to the virtual environment
     '''
+    # Check if the library is already installed
+    # Get the list of currently installed libraries
+    installed_libs = get_libs()
+
+    # Initialize an empty list to store libraries that need to be installed
+    libs_to_install = []
+
+    # Iterate over the libraries that we want to install
     for lib in libs:
+        # Check if the library is already installed
+        # Skip if the library exists
+        if any(lib in installed_lib for installed_lib in installed_libs):
+            continue
+
+        # If not yet installed, then install it
+        libs_to_install.append(lib)
+
+    for lib in libs_to_install:
         os.system(f'pip install {lib}')
 
 
@@ -191,9 +208,14 @@ def get_libs() -> List[str]:
     '''
     Get all installed libraries in the virtual environment
     '''
-    os.system('pip freeze > requirements.txt')
-    with open('requirements.txt', 'r') as f:
-        return f.readlines()
+    temp_file = 'temp-requirements.txt'
+    os.system(f'pip freeze > {temp_file}')
+    data = []
+    with open(temp_file, 'r') as f:
+        data = f.readlines()
+
+    os.system(f'rm {temp_file}')
+    return data
 
 
 if __name__ == '__main__':
