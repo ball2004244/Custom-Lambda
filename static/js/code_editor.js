@@ -34,13 +34,12 @@ require(["vs/editor/editor.main"], () => {
   });
 
   submitBtn.addEventListener("click", async () => {
-    const func_name = funcNameField.value;
     const send_data = {
       content: content,
     };
 
     try {
-      const response = await fetch(`${config.API_URL}/functions/${func_name}`, {
+      const response = await fetch(`${config.API_URL}/functions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -49,7 +48,6 @@ require(["vs/editor/editor.main"], () => {
       });
 
       const data = await response.json();
-      console.log(data);
       //   clear the editor
       editor.setValue("# Your Python code here");
       funcNameField.value = "";

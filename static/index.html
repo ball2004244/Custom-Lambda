@@ -17,9 +17,6 @@
     <div id="edit-tab" class="tab">
       <h2>Function Editor</h2>
       <p>This tab allows you to edit and submit your custom lambda function</p>
-      <p id="func-name"><strong>Function Name:</strong>
-        <input type="text" id="func-name-field">
-      </p>
       
       <div id="monaco-container"></div>
       <button id="submit-btn">Submit</button>
@@ -30,6 +27,23 @@
       <p>This tab allows you to view and execute saved lambda functions</p>
       <p>Wait about 5s to get all functions</p>
       <div id="monitor-container"></div>
+      <div id="display-res-container">
+        <h1>Funtion Name: <span id="func-name"></span></h1>
+        <h2>Function Store: <span id="func-store"></span></h2>
+        <div id="display-params">
+          <h2>Parameters</h2>
+          <table id="params-table">
+            <tr>
+              <th class="param-name"></th>
+              <th class="param-value"><input type="text" class="param-value-input"></th>
+            </tr>
+          </table>
+        </div>
+        <div id="action-btns">
+          <button id="execute-btn">Execute</button>
+          <button id="close-res-container">Close</button>
+        </div>
+      </div>
     </div>
 
     <div id="libs-tab" class="tab" hidden>

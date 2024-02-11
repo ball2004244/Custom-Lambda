@@ -75,6 +75,19 @@ body {
   color: #efdbcb;
 }
 
+#display-res-container {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50%;
+  width: 50%;
+  background-color: #4bb4de;
+  color: #efdbcb;
+  z-index: 100;
+  border-radius: 5px;
+}
+
 #add-lib-tab > #lib-name > #add-lib-input {
   padding: 5px;
   width: 200px;
