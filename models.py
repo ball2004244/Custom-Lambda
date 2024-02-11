@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Any
 
 
 class CreateFuncRequest(BaseModel):
@@ -7,7 +7,7 @@ class CreateFuncRequest(BaseModel):
 
 
 class ExecFuncRequest(BaseModel):
-    params: List[str]
+    params: List[Any]
     target: str  # a file that contains the function
 
 

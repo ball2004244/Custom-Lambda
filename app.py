@@ -1,7 +1,7 @@
 from fastapi import FastAPI, APIRouter, responses
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from logic import get_funcs, add_func, invoke_func, modify_func, delete_func, install_libs, get_libs
+from logic.main_logic import get_funcs, add_func, invoke_func, modify_func, delete_func, install_libs, get_libs
 from models import CreateFuncRequest, ExecFuncRequest, ModifyFuncRequest, DelFuncRequest, LibInstallRequest
 from utils import create_dir
 
@@ -58,14 +58,18 @@ def get_all_funcs() -> dict:
     '''
     res = RESPONSE_TEMPLATE.copy()
     try:
-        res['status'] = 'success'
-        res['message'] = 'All functions retrieved successfully'
 
         all_funcs = get_funcs(target_dir='functions_store')
+        
+        if all_funcs is None:
+            raise Exception('No functions found')
+
         res['data'] = {
             'total': len(list(all_funcs.values())[0]),
             'functions': all_funcs
         }
+        res['status'] = 'success'
+        res['message'] = 'All functions retrieved successfully'
     except Exception as e:
         res['message'] = str(e)
     finally:
@@ -79,8 +83,6 @@ def get_func(func_name: str) -> dict:
     '''
     res = RESPONSE_TEMPLATE.copy()
     try:
-        res['status'] = 'success'
-        res['message'] = f'Successfully retrieved function {func_name}'
 
         all_funcs = get_funcs(target_dir='functions_store')
         if func_name not in all_funcs:
@@ -89,50 +91,27 @@ def get_func(func_name: str) -> dict:
         res['data'] = {
             'function': func_name
         }
-    except Exception as e:
-        res['message'] = str(e)
-    finally:
-        return res
-
-
-@router.get("/functions/{func_name}")
-def get_func(func_name: str) -> dict:
-    '''
-    Get a specific serverless function from functions_store
-    '''
-    res = RESPONSE_TEMPLATE.copy()
-    try:
         res['status'] = 'success'
         res['message'] = f'Successfully retrieved function {func_name}'
-
-        all_funcs = get_funcs(target_dir='functions_store')
-        if func_name not in all_funcs:
-            raise Exception('Function not found')
-
-        res['data'] = {
-            'function': func_name
-        }
     except Exception as e:
         res['message'] = str(e)
     finally:
         return res
 
-
-@router.post("/functions/{func_name}")
-def add_new_func(func_name: str, func_request: CreateFuncRequest) -> dict:
+@router.post("/functions")
+def add_new_func(func_request: CreateFuncRequest) -> dict:
     '''
     Add a new serverless function to functions_store
     '''
     res = RESPONSE_TEMPLATE.copy()
     try:
         content = func_request.content
-        output = add_func(func_name, content, target_dir='functions_store')
-
+        output = add_func(content, target_dir='functions_store')
         if output is None:
             raise Exception('Function already exists')
 
         res['status'] = 'success'
-        res['message'] = f'Successfully added function {func_name}'
+        res['message'] = f'Successfully added function to store {output}'
 
     except Exception as e:
         res['message'] = str(e)

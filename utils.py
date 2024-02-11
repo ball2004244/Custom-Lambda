@@ -1,5 +1,9 @@
 import os
 
+'''
+This file contains all the utility functions used in the app
+'''
+
 def get_files(target_dir: str) -> list:
     '''
     Get all files in the target directory
@@ -18,6 +22,7 @@ def get_py_files(target_dir: str) -> list:
     files = get_files(target_dir)
     py_files = [file for file in files if file.endswith('.py')]
     return py_files
+
 
 def create_dir(target_dir: str) -> None:
     '''
