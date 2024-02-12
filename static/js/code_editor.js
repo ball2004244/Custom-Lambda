@@ -41,6 +41,7 @@ require(["vs/editor/editor.main"], () => {
     try {
       const response = await fetch(`${config.API_URL}/functions`, {
         method: "POST",
+        credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
         },

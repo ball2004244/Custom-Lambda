@@ -36,6 +36,7 @@ uploadList.addEventListener("click", async () => {
   const send_data = { libs: lib_list };
   const response = await fetch(`${config.API_URL}/libs`, {
     method: "POST",
+    credentials: "same-origin",
     headers: {
       "Content-Type": "application/json",
     },
@@ -52,7 +53,10 @@ const libsContainer = document.getElementById("libs-container");
 // Get all libraries
 const libsData = async () => {
   try {
-    const response = await fetch(`${config.API_URL}/libs`);
+    const response = await fetch(`${config.API_URL}/libs`, {
+      method: "GET",
+      credentials: "same-origin",
+    });
     const data = await response.json();
     return data.data;
   } catch (error) {

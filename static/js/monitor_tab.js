@@ -19,7 +19,11 @@ const closeButton = document.getElementById("close-res-container");
 // TODO: Get each function instead of all functions
 const fetchData = async () => {
   try {
-    const response = await fetch(`${config.API_URL}/functions`);
+    const response = await fetch(`${config.API_URL}/functions`, {
+      method: "GET",
+      credentials: "same-origin",
+    });
+  
     const data = await response.json();
     return data.data.functions;
   } catch (error) {
@@ -123,6 +127,7 @@ executeButton.addEventListener("click", async () => {
   const params = Array.from(document.getElementsByClassName("param-value-input")).map(input => input.value);
   const response = await fetch(`${config.API_URL}/execute/${funcNameElement.textContent}`, {
     method: 'POST',
+    credentials: 'same-origin',
     headers: {
       'Content-Type': 'application/json',
     },
