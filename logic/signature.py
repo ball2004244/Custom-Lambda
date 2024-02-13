@@ -67,7 +67,7 @@ def get_params_by_signature(func_name: str, target_dir: str, target_file: str) -
         lines = f.readlines()
         for line in lines:
             if f'#start-function: {FUNC_DELIMITER}, function: {func_name}' in line:
-                params = line.split(',')[2].split('params: ')[1].strip().split(',')
+                params = eval(line.split('params: ')[1])
                 break
 
     if len(params) == 0:

@@ -8,7 +8,6 @@ import config from "./config.js";
  * #####
  */
 const submitBtn = document.getElementById("submit-btn");
-const funcNameField = document.getElementById("func-name-field");
 
 // Configure require.js paths
 require.config({
@@ -19,7 +18,7 @@ require.config({
 
 // Load Monaco Editor
 require(["vs/editor/editor.main"], () => {
-  let content = "# Your Python code here";
+  let content = "def function_name():\n\t# Your Python code here";
   const editor = monaco.editor.create(
     document.getElementById("monaco-container"),
     {
@@ -49,9 +48,9 @@ require(["vs/editor/editor.main"], () => {
       });
 
       const data = await response.json();
+      console.log(data);
       //   clear the editor
-      editor.setValue("# Your Python code here");
-      funcNameField.value = "";
+      editor.setValue("def function_name():\n\t# Your Python code here");
     } catch (error) {
       console.error("Error:", error);
     }
