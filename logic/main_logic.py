@@ -1,13 +1,17 @@
 from utils import get_py_files
-from config import LINE_LIMIT
+from config import LINE_LIMIT, FUNC_DELIMITER
 from typing import Union, List, Dict
-from .signature import start_signature, end_signature, locate_function, get_all_func_names_by_signature, get_params_by_signature
-import importlib.util
-import traceback
-import io
+from .signature import *
+import subprocess
 import sys
 import os
 import re
+import pickle
+import base64
+import shutil
+import inspect
+import importlib.util
+
 '''
 This file accounts for all the logic in the application
 '''
@@ -122,47 +126,58 @@ def add_func(func_content: str, target_dir: str) -> Union[str, None]:
     return target_file
 
 
-def invoke_func(func_name: str, params: list, target_dir: str, target_file: str) -> Dict[str, Union[str, None]]:
+def invoke_func(func_name: str, params: list, target_dir: str, target_file: str) -> Dict[str, Union[int, str, int]]:
     '''
     Run a serverless function from a function store
     '''
-
-    # check if function exists
+    # Check if function exists
     if not func_exists(func_name, target_dir):
         return None
 
-    # load the target file
+    # Define necessary file names and signatures
+    invokee_file = 'invokee.py'
+    template_file = 'invokee_template.py'
+    return_signature = f'#function-return: {FUNC_DELIMITER}'
+
+    # Reset the invokee file with the original content
+    shutil.copyfile(template_file, invokee_file)
+
+    # Add the key phrase to the invokee file
+    add_key_to_invokee(invokee_file)
+
+    # Import the function from the function store
     spec = importlib.util.spec_from_file_location(
-        target_file, f'{target_dir}/{target_file}.py')
-    func_module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(func_module)
+        target_file, os.path.join(target_dir, f'{target_file}.py'))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    func = getattr(module, func_name)
 
-    # check if function exists in the module
-    if not hasattr(func_module, func_name):
-        return None
+    # Rename function to 'func'
+    src = inspect.getsource(func)
+    src = src.replace(func_name, 'func')
 
-    # Invoke the function and capture print() output and exceptions
-    func = getattr(func_module, func_name)
-    original_stdout = sys.stdout
-    original_stderr = sys.stderr
-    sys.stdout = stdout_buffer = io.StringIO()
-    sys.stderr = stderr_buffer = io.StringIO()
-    result = None
-    try:
-        result = func(*params)
-    except Exception:
-        traceback.print_exc()
-    finally:
-        sys.stdout = original_stdout
-        sys.stderr = original_stderr
-    print_output = stdout_buffer.getvalue()
-    error_output = stderr_buffer.getvalue()
+    # Insert the function between the signatures in the invokee file
+    insert_func_to_invokee(src, invokee_file)
 
+    # Prepare the command, pass params as pickle through io stream
+    encoded_params = base64.b64encode(pickle.dumps(params)).decode()
+    command = [sys.executable, invokee_file, encoded_params]
+
+    # Run the command and capture output
+    process = subprocess.run(command, capture_output=True, text=True)
+
+    # Extract the return value from the last line of stdout
+    *stdout, return_value = process.stdout.split(return_signature)
+    decoded_return_value = pickle.loads(
+        base64.b64decode(return_value)) if return_value else None
+
+    # Prepare the output
     output = {
-        'return_result': result,
-        'stdout': print_output,
-        'stderr': error_output
+        'return_value': decoded_return_value,
+        'stdout': stdout,
+        'stderr': process.stderr
     }
+
     return output
 
 

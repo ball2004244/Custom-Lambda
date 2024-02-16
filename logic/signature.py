@@ -74,3 +74,48 @@ def get_params_by_signature(func_name: str, target_dir: str, target_file: str) -
         return None
 
     return params
+
+
+def add_key_to_invokee(invokee: str) -> Union[str, None]:
+    '''
+    Add key phrase to invokee file
+    '''
+    with open(invokee, 'r+') as f:
+        lines = f.readlines()
+        for i, line in enumerate(lines):
+            # Replace start key phrase
+            if '#start-function: KEYPHRASE' in line:
+                lines[i] = f'#start-function: {FUNC_DELIMITER}\n'
+            # Replace end key phrase
+            if '#end-function: KEYPHRASE' in line:
+                lines[i] = f'#end-function: {FUNC_DELIMITER}\n'
+                break
+        f.seek(0)
+        f.writelines(lines)
+        f.truncate()
+
+    return invokee
+
+
+def insert_func_to_invokee(src: str, invokee: str) -> Union[str, None]:
+    '''
+    Insert a function to invokee file
+    '''
+    start_signature = f'#start-function: {FUNC_DELIMITER}'
+    end_signature = f'#end-function: {FUNC_DELIMITER}'
+    with open(invokee, 'r+') as file:
+        lines = file.readlines()
+
+        # Locate the start and end signature
+        start_index = next(i for i, line in enumerate(lines)
+                           if start_signature in line)
+        end_index = next(i for i, line in enumerate(
+            lines) if end_signature in line)
+
+        # Write the new content to the file
+        file.seek(0)
+        file.writelines(lines[:start_index + 1])
+        file.write(src)  # Insert the function
+        file.writelines(lines[end_index:])
+        file.truncate()
+    return invokee
