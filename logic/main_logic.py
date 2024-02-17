@@ -1,7 +1,8 @@
 from utils import get_py_files
-from config import LINE_LIMIT, FUNC_DELIMITER
+from config import LINE_LIMIT, FUNC_DELIMITER, TIME_LIMIT, MEMORY_LIMIT
 from typing import Union, List, Dict
 from .signature import *
+from .limit import invoke_with_limit
 import subprocess
 import sys
 import os
@@ -161,13 +162,13 @@ def invoke_func(func_name: str, params: list, target_dir: str, target_file: str)
 
     # Prepare the command, pass params as pickle through io stream
     encoded_params = base64.b64encode(pickle.dumps(params)).decode()
-    command = [sys.executable, invokee_file, encoded_params]
 
-    # Run the command and capture output
-    process = subprocess.run(command, capture_output=True, text=True)
+    # Run the function with limited resources
+    output = invoke_with_limit(
+        invokee_file, encoded_params, TIME_LIMIT, MEMORY_LIMIT)
 
     # Extract the return value from the last line of stdout
-    *stdout, return_value = process.stdout.split(return_signature)
+    stdout, return_value = output['stdout'].split(return_signature)
     decoded_return_value = pickle.loads(
         base64.b64decode(return_value)) if return_value else None
 
@@ -175,7 +176,7 @@ def invoke_func(func_name: str, params: list, target_dir: str, target_file: str)
     output = {
         'return_value': decoded_return_value,
         'stdout': stdout,
-        'stderr': process.stderr
+        'stderr': output['stderr'],
     }
 
     return output
