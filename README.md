@@ -50,9 +50,16 @@ uvicorn app:app --host 127.0.0.1 --port 9999
 
 ## Usage
 
-You can call bash script from test directory to test the application.
+1. **Interact through Frontend**: Open your web browser and navigate to `http://localhost:9999/`. This will take you to the application's frontend where you can interact with its features.
 
-Visit http://localhost:9999/docs to see the API documentation.
+2. **Testing the Application**: We have provided some bash scripts in `test` directory that you can use to test the application. Run the following command to test the application:
+
+```bash
+bash test/get_all.sh
+```
+
+
+3. **API Documentation**: To understand the application's API endpoints and their usage, visit `http://localhost:9999/docs`. This page provides comprehensive documentation for the API.
 
 ## Roadmap
 
