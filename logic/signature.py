@@ -1,20 +1,29 @@
 from config import FUNC_DELIMITER
 from typing import List, Tuple, Union
 '''
-This file accounts for function signature verification
+This file accounts for function signature verification.
+Signature is used to distinguish between different functions in the same file,
+or to divide a function into different parts
 '''
 
-
-def start_signature(func_name: str, params: List[str]) -> str:
+def get_return_signature() -> str:
     '''
-    Return a start signature for a function
+    Get the return signature of a function
+    Return signature separate stdout from function return values
+    '''
+    return f'#function-return: {FUNC_DELIMITER}'
+
+
+def get_start_signature(func_name: str, params: List[str]) -> str:
+    '''
+    Return a start signature for a saved function
     '''
     return f'#start-function: {FUNC_DELIMITER}, function: {func_name}, params: {params}\n'
 
 
-def end_signature(func_name: str) -> str:
+def get_end_signature(func_name: str) -> str:
     '''
-    Return an end signature for a function
+    Return an end signature for a saved function
     '''
     return f'#end-function: {FUNC_DELIMITER}, function: {func_name}\n'
 
@@ -59,7 +68,7 @@ def get_all_func_names_by_signature(target_dir: str, target_file: str) -> Union[
 
 def get_params_by_signature(func_name: str, target_dir: str, target_file: str) -> Union[List[str], None]:
     '''
-    Get all params from a function by signature and function name
+    Get all params from a saved function using signature
     '''
 
     params = []
@@ -78,7 +87,7 @@ def get_params_by_signature(func_name: str, target_dir: str, target_file: str) -
 
 def add_key_to_invokee(invokee: str) -> Union[str, None]:
     '''
-    Add key phrase to invokee file
+    Replace default key phrase in invokee file with secret key phrase
     '''
     with open(invokee, 'r+') as f:
         lines = f.readlines()
@@ -119,3 +128,4 @@ def insert_func_to_invokee(src: str, invokee: str) -> Union[str, None]:
         file.writelines(lines[end_index:])
         file.truncate()
     return invokee
+

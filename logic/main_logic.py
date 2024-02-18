@@ -1,10 +1,8 @@
 from utils import get_py_files
-from config import LINE_LIMIT, FUNC_DELIMITER, TIME_LIMIT, MEMORY_LIMIT
+from config import LINE_LIMIT, TIME_LIMIT, MEMORY_LIMIT, MAX_UPLOAD_SIZE
 from typing import Union, List, Dict
 from .signature import *
 from .limit import invoke_with_limit
-import subprocess
-import sys
 import os
 import re
 import pickle
@@ -108,6 +106,14 @@ def add_func(func_content: str, target_dir: str) -> Union[str, None]:
     if func_exists(func_name, target_dir):
         return None
 
+    # If uploaded function is too large, return None
+    if len(func_content.split('\n')) > LINE_LIMIT:
+        return None
+
+    # If the size of the file is too large, return None
+    if len(func_content.encode('utf-8')) > MAX_UPLOAD_SIZE:
+        return None
+
     target_file = list(funcs.keys())[-1] if funcs else 0
     write_mode = 'a'
     file_path = f'{target_dir}/{target_file}.py'
@@ -120,9 +126,9 @@ def add_func(func_content: str, target_dir: str) -> Union[str, None]:
     # Add the new function to the file
     file_path = f'{target_dir}/{target_file}.py'
     with open(file_path, write_mode) as f:
-        f.write(start_signature(func_name, params))
+        f.write(get_start_signature(func_name, params))
         f.write(func_content)
-        f.write(end_signature(func_name))
+        f.write(get_end_signature(func_name))
 
     return target_file
 
@@ -131,14 +137,13 @@ def invoke_func(func_name: str, params: list, target_dir: str, target_file: str)
     '''
     Run a serverless function from a function store
     '''
-    # Check if function exists
     if not func_exists(func_name, target_dir):
         return None
 
     # Define necessary file names and signatures
     invokee_file = 'invokee.py'
     template_file = 'invokee_template.py'
-    return_signature = f'#function-return: {FUNC_DELIMITER}'
+    return_signature = get_return_signature()
 
     # Reset the invokee file with the original content
     shutil.copyfile(template_file, invokee_file)
@@ -172,7 +177,6 @@ def invoke_func(func_name: str, params: list, target_dir: str, target_file: str)
     decoded_return_value = pickle.loads(
         base64.b64decode(return_value)) if return_value else None
 
-    # Prepare the output
     output = {
         'return_value': decoded_return_value,
         'stdout': stdout,

@@ -56,24 +56,37 @@ Visit http://localhost:9999/docs to see the API documentation.
 
 ## Roadmap
 
-v1.0.0:
-
-- Allow user to CREATE invokee function in Python
-- Uers can EXECUTE the function
-- Users can GET all functions, GET a function by its name
-- Users can MODIFY existing functions and DELETE a function
-- Functions is stored distributedly in the file system
-- Added logging for each function
-
-v1.0.1 (Upcoming):
+v1.0.1 (Released)
 
 - In-app package installation (through pip)
 - Add Timeout and Memory Limit for each function
-- Limit file size for each function
+- Limit upload file size
 - Add simple UI for the application
 
-v1.0.2 (Upcoming):
+v1.0.2 (Upcoming)
 
-- Separate function uploading and function executing channels
-- Separate dependency for each function
-- Add support for other languages
+- Separate function uploading and executing channels
+- Separate dependencies for each function
+- Separate functions between users, allow same function name for different users
+
+v1.0.3 (Upcoming)
+
+- Support other languages
+- Restrict users' access to system level commands
+- Add rate limit
+
+Visit [CHANGELOG.md](CHANGELOG.md) to see full update history.
+
+## Contributing
+
+How to contribute to the project?
+
+1. Fork the project
+2. Create your feature branch: `git checkout -b feature/AmazingFeature`
+3. Commit your changes: `git commit -m 'Add some AmazingFeature'`
+4. Push to the branch: `git push origin feature/AmazingFeature`
+5. Open a pull request
+
+## License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for more details.
