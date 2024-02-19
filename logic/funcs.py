@@ -1,18 +1,15 @@
 from utils import get_py_files
 from config import LINE_LIMIT, TIME_LIMIT, MEMORY_LIMIT, MAX_UPLOAD_SIZE
-from typing import Union, List, Dict
+from typing import Union, List, Dict, Any
 from .signature import *
-from .limit import invoke_with_limit
+from .invoke import invoke_with_limit, prepare_invokee
 import os
 import re
 import pickle
 import base64
-import shutil
-import inspect
-import importlib.util
 
 '''
-This file accounts for all the logic in the application
+This file contains the logic to modify and manage invokee/invoker functions
 '''
 
 
@@ -30,7 +27,6 @@ def split_func_content(func_content: str) -> Union[str, List[str], Union[str, No
     first_line = lines[0]
 
     pattern = r'def (\w+)\((.*?)\)(?:\s*->\s*(\w+))?:'
-    # Use regex to extract the function name and params
     match = re.match(pattern, first_line)
 
     if not match:
@@ -102,15 +98,14 @@ def add_func(func_content: str, target_dir: str) -> Union[str, None]:
     func_name, params, _ = split_func_content(func_content)
     funcs = get_funcs(target_dir)
 
-    # If function already exists, return None
     if func_exists(func_name, target_dir):
         return None
 
-    # If uploaded function is too large, return None
+    # Reject overly long functions
     if len(func_content.split('\n')) > LINE_LIMIT:
         return None
 
-    # If the size of the file is too large, return None
+    # Reject overly large functions
     if len(func_content.encode('utf-8')) > MAX_UPLOAD_SIZE:
         return None
 
@@ -133,46 +128,23 @@ def add_func(func_content: str, target_dir: str) -> Union[str, None]:
     return target_file
 
 
-def invoke_func(func_name: str, params: list, target_dir: str, target_file: str) -> Dict[str, Union[int, str, int]]:
+def invoke_func(func_name: str, params: list, target_dir: str, target_file: str) -> Dict[str, Any]:
     '''
     Run a serverless function from a function store
     '''
     if not func_exists(func_name, target_dir):
         return None
 
-    # Define necessary file names and signatures
     invokee_file = 'invokee.py'
     template_file = 'invokee_template.py'
     return_signature = get_return_signature()
 
-    # Reset the invokee file with the original content
-    shutil.copyfile(template_file, invokee_file)
+    prepare_invokee(func_name, target_dir, target_file,
+                    invokee_file, template_file)
 
-    # Add the key phrase to the invokee file
-    add_key_to_invokee(invokee_file)
-
-    # Import the function from the function store
-    spec = importlib.util.spec_from_file_location(
-        target_file, os.path.join(target_dir, f'{target_file}.py'))
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    func = getattr(module, func_name)
-
-    # Rename function to 'func'
-    src = inspect.getsource(func)
-    src = src.replace(func_name, 'func')
-
-    # Insert the function between the signatures in the invokee file
-    insert_func_to_invokee(src, invokee_file)
-
-    # Prepare the command, pass params as pickle through io stream
-    encoded_params = base64.b64encode(pickle.dumps(params)).decode()
-
-    # Run the function with limited resources
     output = invoke_with_limit(
-        invokee_file, encoded_params, TIME_LIMIT, MEMORY_LIMIT)
+        invokee_file, params, TIME_LIMIT, MEMORY_LIMIT)
 
-    # Extract the return value from the last line of stdout
     stdout, return_value = output['stdout'].split(return_signature)
     decoded_return_value = pickle.loads(
         base64.b64decode(return_value)) if return_value else None
@@ -194,20 +166,15 @@ def modify_func(func_name: str, new_func: str, target_dir: str, target_file: str
     if not func_exists(func_name, target_dir):
         return None
 
-    # check for start and end of function
     start, end = locate_function(func_name, target_dir, target_file)
 
     if start is None or end is None:
         return None
 
-    # open the file and write the new function to new location
+    # replace old content with new one
     with open(f'{target_dir}/{target_file}.py', 'r+') as f:
         lines = f.readlines()
-        # replace old content with new one
-        # ignore the signature
         lines[start+1:end-1] = new_func.split('\n')
-
-        # write the new content to the file
         f.seek(0)
         f.writelines(lines)
         f.truncate()
@@ -229,51 +196,15 @@ def delete_func(func_name: str, target_dir: str, target_file: str) -> Union[str,
     if start is None or end is None:
         return None
 
+    # delet function and signatures
     with open(f'{target_dir}/{target_file}.py', 'r+') as f:
         lines = f.readlines()
-        # delete the function and signature
         del lines[start:end]
-
-        # write the new content to the file
         f.seek(0)
         f.writelines(lines)
         f.truncate()
 
     return target_file
-
-
-def install_libs(libs: List[str]) -> None:
-    '''
-    Install a list of libraries to the virtual environment
-    '''
-    # Check if the library is already installed
-    installed_libs = get_libs()
-    libs_to_install = []
-
-    # Iterate over the libraries to extract non-existing ones
-    for lib in libs:
-        if any(lib in installed_lib for installed_lib in installed_libs):
-            continue
-
-        # If not yet installed, then install it
-        libs_to_install.append(lib)
-
-    for lib in libs_to_install:
-        os.system(f'pip install {lib}')
-
-
-def get_libs() -> List[str]:
-    '''
-    Get all installed libraries in the virtual environment
-    '''
-    temp_file = 'temp-requirements.txt'
-    os.system(f'pip freeze > {temp_file}')
-    data = []
-    with open(temp_file, 'r') as f:
-        data = f.readlines()
-
-    os.system(f'rm {temp_file}')
-    return data
 
 
 if __name__ == '__main__':

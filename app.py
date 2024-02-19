@@ -1,7 +1,8 @@
 from fastapi import FastAPI, APIRouter, responses
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from logic.main_logic import get_funcs, add_func, invoke_func, modify_func, delete_func, install_libs, get_libs
+from logic.funcs import get_funcs, add_func, invoke_func, modify_func, delete_func
+from logic.libs import install_libs, get_libs
 from models import CreateFuncRequest, ExecFuncRequest, ModifyFuncRequest, DelFuncRequest, LibInstallRequest
 from utils import create_dir
 
@@ -60,7 +61,7 @@ def get_all_funcs() -> dict:
     try:
 
         all_funcs = get_funcs(target_dir='functions_store')
-        
+
         if all_funcs is None:
             raise Exception('No functions found')
 
@@ -97,6 +98,7 @@ def get_func(func_name: str) -> dict:
         res['message'] = str(e)
     finally:
         return res
+
 
 @router.post("/functions")
 def add_new_func(func_request: CreateFuncRequest) -> dict:

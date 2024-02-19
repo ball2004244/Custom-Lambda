@@ -1,14 +1,13 @@
-# Use an official Python runtime as a parent image
 FROM python:3.11-slim
 
-# Set the working directory in the container to /app
+# Set up woking directory
 WORKDIR /app
 ADD . /app
 
-# Install any needed packages specified in requirements.txt
+# Install all dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Make port 9999 available to the world outside this container
+# Open port 9999 on container
 EXPOSE 9999
 
 # Run app.py when the container launches

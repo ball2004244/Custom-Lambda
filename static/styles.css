@@ -88,7 +88,6 @@ body {
   border-radius: 5px;
 }
 
-
 #add-lib-tab > #lib-name > #add-lib-input {
   padding: 5px;
   width: 200px;
@@ -124,7 +123,6 @@ button[active] {
   background-color: #4bb4de;
   color: #efdbcb;
 }
-
 
 .funcs-table {
   width: 100%;

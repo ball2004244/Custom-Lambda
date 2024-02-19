@@ -1,14 +1,51 @@
 import time
 import psutil
 import subprocess
-from typing import Dict
+import pickle
+import base64
+import importlib.util
+import inspect
+import os
+import shutil
+from signature import add_signature_to_invokee, insert_func_to_invokee
+from typing import Dict, Union
 from threading import Thread
 from queue import Queue, Empty
 from config import MAX_STDOUT
 
 '''
-This file add some limits to a cloud function to avoid infinite loops or memory leaks
+This file contains the low-level logic of invoking a function
 '''
+
+
+def prepare_invokee(func_name: str, funcstore_dir: str, funcstore_file: str, invokee_file: str = 'invokee.py', template: str = 'invokee_template.py') -> Union[str, None]:
+    '''
+    This function do minimal modification to the invokee file
+    so it will be ready for next call
+    '''
+    try:
+        # * RESET invokee file
+        shutil.copyfile(template, invokee_file)
+        add_signature_to_invokee(invokee_file)
+
+        # * PREPARE function to be invoked
+        # Get the function from funcstore
+        spec = importlib.util.spec_from_file_location(
+            funcstore_file, os.path.join(funcstore_dir, f'{funcstore_file}.py'))
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        func = getattr(module, func_name)
+
+        # Rename function
+        src = inspect.getsource(func)
+        src = src.replace(func_name, 'func')
+
+        # * PASS function to invokee file
+        insert_func_to_invokee(src, invokee_file)
+
+        return 'Function prepared successfully'
+    except Exception:
+        return None
 
 
 def invoke_with_limit(invokee: str, params: str, time_limit: int = 60, memory_limit: int = 1000000000) -> Dict[str, str]:
@@ -24,7 +61,8 @@ def invoke_with_limit(invokee: str, params: str, time_limit: int = 60, memory_li
     }
 
     try:
-        cmd = ['python3', invokee, params]
+        encoded_params = base64.b64encode(pickle.dumps(params)).decode()
+        cmd = ['python3', invokee, encoded_params]
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE, text=True)
 
@@ -60,7 +98,6 @@ def invoke_with_limit(invokee: str, params: str, time_limit: int = 60, memory_li
             #     last_print_time = time.perf_counter()
 
             # Store the output in a list
-
 
         output['status'] = 'success'
         output['message'] = 'Function ran successfully'

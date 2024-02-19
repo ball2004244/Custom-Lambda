@@ -85,7 +85,7 @@ def get_params_by_signature(func_name: str, target_dir: str, target_file: str) -
     return params
 
 
-def add_key_to_invokee(invokee: str) -> Union[str, None]:
+def add_signature_to_invokee(invokee: str) -> Union[str, None]:
     '''
     Replace default key phrase in invokee file with secret key phrase
     '''

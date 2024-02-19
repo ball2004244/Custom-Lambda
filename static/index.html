@@ -17,7 +17,7 @@
     <div id="edit-tab" class="tab">
       <h2>Function Editor</h2>
       <p>This tab allows you to edit and submit your custom lambda function</p>
-      
+
       <div id="monaco-container"></div>
       <button id="submit-btn">Submit</button>
     </div>
@@ -32,8 +32,7 @@
         <h2>Function Store: <span id="func-store"></span></h2>
         <div id="display-params">
           <h2>Parameters</h2>
-          <table id="params-table">
-          </table>
+          <table id="params-table"></table>
         </div>
         <div id="action-btns">
           <button id="execute-btn">Execute</button>
@@ -42,7 +41,7 @@
         <div id="display-res">
           <h2>Result</h2>
           <pre id="res"></pre>
-        </div>  
+        </div>
       </div>
     </div>
 
@@ -55,8 +54,9 @@
     <div id="add-lib-tab" class="tab" hidden>
       <h2>Add Libs</h2>
       <p>This tab allows you to add python libraries</p>
-      <p id="lib-name"><strong>Library Name:</strong>
-        <input type="text" id="add-lib-input">
+      <p id="lib-name">
+        <strong>Library Name:</strong>
+        <input type="text" id="add-lib-input" />
       </p>
 
       <div id="add-lib-container">
@@ -64,9 +64,8 @@
         <button id="upload-libs-btn">Upload to Server</button>
       </div>
       <ul id="libs-list"></ul>
-  
     </div>
-  
+
     <script type="module" src="js/config.js"></script>
     <script type="module" src="js/left_bar.js"></script>
     <script type="module" src="js/code_editor.js"></script>

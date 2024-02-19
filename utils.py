@@ -1,10 +1,12 @@
+from typing import List
 import os
 
 '''
 This file contains all the utility functions used in the app
 '''
 
-def get_files(target_dir: str) -> list:
+
+def get_files(target_dir: str) -> List[str]:
     '''
     Get all files in the target directory
     '''
@@ -15,7 +17,7 @@ def get_files(target_dir: str) -> list:
     return files
 
 
-def get_py_files(target_dir: str) -> list:
+def get_py_files(target_dir: str) -> List[str]:
     '''
     Get all python files in the target directory
     '''

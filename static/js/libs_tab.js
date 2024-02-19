@@ -7,7 +7,6 @@ import config from "./config.js";
  * #####
  */
 
-
 // Add libs to preinstall list on enter
 const addLibInput = document.getElementById("add-lib-input");
 const preInstallList = document.getElementById("libs-list");

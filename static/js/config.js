@@ -2,7 +2,7 @@
  * #####
  *
  * This file is used to store the configuration of the application
- * 
+ *
  * #####
  */
 
