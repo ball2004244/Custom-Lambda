@@ -46,6 +46,9 @@ def func_exists(func_name: str, target_dir: str) -> bool:
     '''
     funcs = get_funcs(target_dir)
 
+    if not funcs:
+        return False
+
     for val in list(funcs.values())[0]:
         if val['function'] == func_name:
             return True
@@ -90,16 +93,19 @@ def get_funcs(target_dir: str) -> Dict[str, List[str]]:
     return funcs
 
 
-def add_func(func_content: str, target_dir: str) -> Union[str, None]:
+def add_func(func_content: str, target_dir: str, author: str='admin', password: str='admin') -> Union[str, None]:
     '''
     Add a serverless function to a python file,
     return a target file name
     '''
+
     func_name, params, _ = split_func_content(func_content)
     funcs = get_funcs(target_dir)
 
-    if func_exists(func_name, target_dir):
-        return None
+    # Not allow same function name
+    #TODO: Work out so different user can have same function name
+    # if func_exists(func_name, target_dir):
+    #     return None
 
     # Reject overly long functions
     if len(func_content.split('\n')) > LINE_LIMIT:
@@ -122,13 +128,14 @@ def add_func(func_content: str, target_dir: str) -> Union[str, None]:
     file_path = f'{target_dir}/{target_file}.py'
     with open(file_path, write_mode) as f:
         f.write(get_start_signature(func_name, params))
+        f.write(get_author_signature(author, password))
         f.write(func_content)
         f.write(get_end_signature(func_name))
 
     return target_file
 
 
-def invoke_func(func_name: str, params: list, target_dir: str, target_file: str) -> Dict[str, Any]:
+def invoke_func(func_name: str, params: list, target_dir: str, target_file: str, author: str='admin', password: str='admin') -> Dict[str, Any]:
     '''
     Run a serverless function from a function store
     '''
@@ -138,12 +145,23 @@ def invoke_func(func_name: str, params: list, target_dir: str, target_file: str)
     invokee_file = 'invokee.py'
     template_file = 'invokee_template.py'
     return_signature = get_return_signature()
+    user_auth = verify_author(author, password, func_name, target_dir, target_file)
+
+    # User not found
+    if user_auth is None:
+        return None
+    
+    # Wrong password
+    if not user_auth:
+        return None
 
     prepare_invokee(func_name, target_dir, target_file,
                     invokee_file, template_file)
 
+
     output = invoke_with_limit(
         invokee_file, params, TIME_LIMIT, MEMORY_LIMIT)
+
 
     stdout, return_value = output['stdout'].split(return_signature)
     decoded_return_value = pickle.loads(

@@ -1,10 +1,12 @@
 from config import FUNC_DELIMITER
 from typing import List, Tuple, Union
+from .auth import hash_password, check_password
 '''
 This file accounts for function signature verification.
 Signature is used to distinguish between different functions in the same file,
 or to divide a function into different parts
 '''
+
 
 def get_return_signature() -> str:
     '''
@@ -112,6 +114,7 @@ def insert_func_to_invokee(src: str, invokee: str) -> Union[str, None]:
     '''
     start_signature = f'#start-function: {FUNC_DELIMITER}'
     end_signature = f'#end-function: {FUNC_DELIMITER}'
+
     with open(invokee, 'r+') as file:
         lines = file.readlines()
 
@@ -129,3 +132,33 @@ def insert_func_to_invokee(src: str, invokee: str) -> Union[str, None]:
         file.truncate()
     return invokee
 
+
+def get_author_signature(name: str, password: str) -> str:
+    '''
+    Add author name and password of an invokee function
+    '''
+    return f'#author: {name}, creds: {hash_password(password)}\n'
+
+
+def verify_author(author: str, password: str, func_name: str, target_dir: str, target_file: str) -> Union[bool, None]:
+    '''
+    Check if the author and password are correct for a specific function
+    True - User is authorized with the correct function
+    False - User is not authorized with the correct function
+    None - User is not exists
+    '''
+
+    i = 0
+    lines = []
+    with open(f'{target_dir}/{target_file}.py', 'r') as f:
+        lines = f.readlines()
+
+    for i in range(1, len(lines)):
+        # Check if the author exists
+        if f'#author: {author}, creds: ' in lines[i]:
+            hashed_password = lines[i].split('creds: ')[1].strip()
+
+            # Check if the function is correct
+            if f'#start-function: {FUNC_DELIMITER}, function: {func_name}' in lines[i-1]:
+                return check_password(password, hashed_password)
+    return None

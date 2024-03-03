@@ -7,7 +7,7 @@ import importlib.util
 import inspect
 import os
 import shutil
-from signature import add_signature_to_invokee, insert_func_to_invokee
+from .signature import add_signature_to_invokee, insert_func_to_invokee
 from typing import Dict, Union
 from threading import Thread
 from queue import Queue, Empty

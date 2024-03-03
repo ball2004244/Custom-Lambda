@@ -8,5 +8,5 @@ def pascal_triangle(n):
         triangle.append(row)
     return triangle
 "
-json_content=$(jq -n --arg str "$content" '{"content":$str}')
+json_content=$(jq -n --arg str "$content" '{"content":$str, "username":"test", "password":"test"}')
 curl -X POST -H "Content-Type: application/json" -d "$json_content" http://localhost:9999/api/functions

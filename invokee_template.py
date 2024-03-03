@@ -18,8 +18,8 @@ def invoker() -> None:
     print(get_return_signature())
     print(base64.b64encode(pickle.dumps(result)).decode())  # func's return value
 
-# start-function: KEYPHRASE
-# end-function: KEYPHRASE
+#start-function: KEYPHRASE
+#end-function: KEYPHRASE
 
 
 if __name__ == "__main__":

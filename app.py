@@ -108,7 +108,8 @@ def add_new_func(func_request: CreateFuncRequest) -> dict:
     res = RESPONSE_TEMPLATE.copy()
     try:
         content = func_request.content
-        output = add_func(content, target_dir='functions_store')
+        output = add_func(content, target_dir='functions_store', author=func_request.username,
+                          password=func_request.password)
         if output is None:
             raise Exception('Function already exists')
 
@@ -132,7 +133,12 @@ def execute_func(func_name: str, exec_request: ExecFuncRequest) -> dict:
         params = exec_request.params
         target_file = exec_request.target
         output = invoke_func(
-            func_name, params, target_dir='functions_store', target_file=target_file)
+            func_name, params, target_dir='functions_store', target_file=target_file,
+            author=exec_request.username, password=exec_request.password)
+
+        if output is None:
+            raise Exception('Your function did not run successfully')
+
         res['status'] = 'success'
         res['message'] = f'Successfully executed function {func_name}'
         res['data'] = output
