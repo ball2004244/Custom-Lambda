@@ -32,3 +32,4 @@ def create_dir(target_dir: str) -> None:
     '''
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
+

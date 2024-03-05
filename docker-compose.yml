@@ -6,7 +6,9 @@ services:
       - "9999:9999"
     volumes:
       - ./functions_store:/app/functions_store
+      - ./config_store:/app/config_store
     env_file:
       - .env
 volumes:
   functions_store:
+  config_store:

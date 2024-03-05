@@ -2,11 +2,16 @@ from fastapi import FastAPI, APIRouter, responses
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from logic.funcs import get_funcs, add_func, invoke_func, modify_func, delete_func
-from logic.libs import install_libs, get_libs
+from logic.libs import install_libs, get_libs, install_on_startup
 from models import CreateFuncRequest, ExecFuncRequest, ModifyFuncRequest, DelFuncRequest, LibInstallRequest
 from utils import create_dir
+from config import FUNC_STORE, CONF_STORE
 
-create_dir('functions_store')
+# Initialize directories
+create_dir(FUNC_STORE)
+create_dir(CONF_STORE)
+
+install_on_startup(f'{CONF_STORE}/cloud_requirements.txt')
 
 app = FastAPI()
 app.add_middleware(
@@ -198,7 +203,8 @@ def get_installed_libs() -> dict:
     try:
         res['status'] = 'success'
         res['message'] = 'All installed libraries retrieved successfully'
-        res['data'] = get_libs()
+        res['data'] = get_libs(f'{CONF_STORE}/cloud_requirements.txt')
+
     except Exception as e:
         res['message'] = str(e)
     finally:
@@ -213,9 +219,10 @@ def install_libraries(lib_request: LibInstallRequest) -> dict:
     res = RESPONSE_TEMPLATE.copy()
     try:
         libs = lib_request.libs
-        install_libs(libs)
+        install_libs(libs, f'{CONF_STORE}/cloud_requirements.txt')
         res['status'] = 'success'
         res['message'] = 'Successfully installed libraries'
+
     except Exception as e:
         res['message'] = str(e)
     finally:
