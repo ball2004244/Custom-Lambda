@@ -3,7 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from logic.funcs import get_funcs, add_func, invoke_func, modify_func, delete_func
 from logic.libs import install_libs, get_libs, install_on_startup
-from models import CreateFuncRequest, ExecFuncRequest, ModifyFuncRequest, DelFuncRequest, LibInstallRequest
+from models import GetUserFuncsRequest, CreateFuncRequest, ExecFuncRequest, ModifyFuncRequest, DelFuncRequest, LibInstallRequest
 from utils import create_dir
 from config import FUNC_STORE, CONF_STORE
 
@@ -57,14 +57,13 @@ def read_root() -> dict:
         return res
 
 
-@router.get("/functions")
+@router.get("/admin/functions")
 def get_all_funcs() -> dict:
     '''
     Get all serverless functions from functions_store
     '''
     res = RESPONSE_TEMPLATE.copy()
     try:
-
         all_funcs = get_funcs(target_dir='functions_store')
 
         if all_funcs is None:
@@ -82,10 +81,11 @@ def get_all_funcs() -> dict:
         return res
 
 
-@router.get("/functions/{func_name}")
+@router.get("/admin/functions/{func_name}")
 def get_func(func_name: str) -> dict:
     '''
     Get a specific serverless function from functions_store
+    Permission: ADMIN
     '''
     res = RESPONSE_TEMPLATE.copy()
     try:
@@ -104,6 +104,29 @@ def get_func(func_name: str) -> dict:
     finally:
         return res
 
+@router.get("/functions")
+def get_user_funcs(get_request: GetUserFuncsRequest) -> dict:
+    '''
+    Get all serverless functions from functions_store
+    Permission: Normal USER
+    '''
+    res = RESPONSE_TEMPLATE.copy()
+    try:
+        all_funcs = get_funcs(target_dir='functions_store', author=get_request.username,
+                          password=get_request.password)
+        if all_funcs is None:
+            raise Exception('No functions found')
+
+        res['data'] = {
+            'total': len(list(all_funcs.values())[0]),
+            'functions': all_funcs
+        }
+        res['status'] = 'success'
+        res['message'] = 'All functions retrieved successfully'
+    except Exception as e:
+        res['message'] = str(e)
+    finally:
+        return res
 
 @router.post("/functions")
 def add_new_func(func_request: CreateFuncRequest) -> dict:

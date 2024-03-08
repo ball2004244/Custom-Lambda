@@ -1,6 +1,10 @@
 from pydantic import BaseModel, Field
 from typing import List, Any
 
+class GetUserFuncsRequest(BaseModel):
+    username: str = Field('admin')
+    password: str = Field('admin')
+
 
 class CreateFuncRequest(BaseModel):
     content: str

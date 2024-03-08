@@ -1,5 +1,5 @@
 from config import FUNC_DELIMITER
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Literal
 from .auth import hash_password, check_password
 '''
 This file accounts for function signature verification.
@@ -28,6 +28,13 @@ def get_end_signature(func_name: str) -> str:
     Return an end signature for a saved function
     '''
     return f'#end-function: {FUNC_DELIMITER}, function: {func_name}\n'
+
+
+def get_author_signature(name: str, password: str) -> str:
+    '''
+    Add author name and password of an invokee function
+    '''
+    return f'#author: {name}, creds: {hash_password(password)}\n'
 
 
 def locate_function(func_name: str, target_dir: str, target_file: str) -> Union[Tuple[int, int], None]:
@@ -67,6 +74,31 @@ def get_all_func_names_by_signature(target_dir: str, target_file: str) -> Union[
 
     return func_names
 
+def get_func_names_by_author(target_dir: str, target_file: str, author: str, password: str) -> Union[List[str], None]:
+    '''
+    Get all func names from 1 author in current py file
+    Required user to have valid auth
+    '''
+    func_names = set()
+    with open(f'{target_dir}/{target_file}.py', 'r') as f:
+        lines = f.readlines()
+        for line in lines:
+            if f'#start-function: {FUNC_DELIMITER}, function: ' in line:
+                func_name = line.split(',')[1].split('function: ')[1]
+                verified_author = verify_author(author, password, func_name, target_dir, target_file)
+                if verified_author is None:
+                    return None
+                
+                if not verified_author:
+                    continue
+
+                func_names.add(func_name)
+
+    if len(func_names) == 0:
+        return None
+
+    return list(func_names)
+    
 
 def get_params_by_signature(func_name: str, target_dir: str, target_file: str) -> Union[List[str], None]:
     '''
@@ -131,13 +163,6 @@ def insert_func_to_invokee(src: str, invokee: str) -> Union[str, None]:
         file.writelines(lines[end_index:])
         file.truncate()
     return invokee
-
-
-def get_author_signature(name: str, password: str) -> str:
-    '''
-    Add author name and password of an invokee function
-    '''
-    return f'#author: {name}, creds: {hash_password(password)}\n'
 
 
 def verify_author(author: str, password: str, func_name: str, target_dir: str, target_file: str) -> Union[bool, None]:

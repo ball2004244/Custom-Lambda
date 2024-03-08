@@ -1,1 +1,1 @@
-curl http://localhost:9999/api/functions
+curl http://localhost:9999/api/admin/functions

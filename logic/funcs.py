@@ -1,4 +1,4 @@
-from utils import get_py_files
+from utils import get_py_files, create_py_file
 from config import LINE_LIMIT, TIME_LIMIT, MEMORY_LIMIT, MAX_UPLOAD_SIZE
 from typing import Union, List, Dict, Any
 from .signature import *
@@ -55,12 +55,23 @@ def func_exists(func_name: str, target_dir: str) -> bool:
     return False
 
 
-def get_funcs(target_dir: str) -> Dict[str, List[str]]:
+def get_funcs(target_dir: str, author: str='admin', password: str='admin') -> Union[Dict[str, List[str]], None]:
     '''
     Get all serverless functions from a python file
+    Permission: ADMIN, NORMAL USER
     '''
+    # Mock data for admin
+    admin_username = 'admin'
+    admin_pass = 'admin'
+    
+
     funcs = {}
     py_files = get_py_files(target_dir)
+    # handle when no store exists
+    if not py_files:
+        create_py_file(target_dir, '0.py')
+        return None
+    
     for file in py_files:
         with open(f'{target_dir}/{file}', 'r') as f:
             # ignore init file
@@ -69,9 +80,18 @@ def get_funcs(target_dir: str) -> Dict[str, List[str]]:
 
             # add functions of each file to a dictionary
             out_list = []
+            funcc_list = None
             formatted_file = file.split('.')[0]
-            func_lst = get_all_func_names_by_signature(
-                target_dir, formatted_file)
+            
+            # either return all funcs of 1 user or return all funcs in the system
+            if author == admin_username and password == admin_pass:
+                func_lst = get_all_func_names_by_signature(
+                    target_dir, formatted_file)
+            else:
+                func_lst = get_func_names_by_author(
+                    target_dir, formatted_file, author, password)
+                
+
             if func_lst is None:
                 continue
 
@@ -90,7 +110,7 @@ def get_funcs(target_dir: str) -> Dict[str, List[str]]:
             # get rid of extension
             funcs[formatted_file] = out_list
 
-    return funcs
+    return funcs if funcs else None
 
 
 def add_func(func_content: str, target_dir: str, author: str='admin', password: str='admin') -> Union[str, None]:
