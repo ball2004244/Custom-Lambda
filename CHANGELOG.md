@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 - Restrict users' access to system level commands
 - Add rate limit
 
-## v1.0.2 - Unreleased
+## v1.0.2 - 2024-03-19
 
 - Separate function uploading and executing channels
 - Separate dependencies for each function

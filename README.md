@@ -70,7 +70,7 @@ v1.0.1 (Released)
 - Limit upload file size
 - Add simple UI for the application
 
-v1.0.2 (Upcoming)
+v1.0.2 (Released)
 
 - Separate function uploading and executing channels
 - Separate dependencies for each function
