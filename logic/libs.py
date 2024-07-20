@@ -22,8 +22,8 @@ def install_libs(libs: List[str], req_file: str = 'cloud_requirements.txt') -> N
         # If not yet installed, then install it
         libs_to_install.append(lib)
 
-    for lib in libs_to_install:
-        os.system(f'pip install {lib}')
+    install_str = ' '.join(libs_to_install)
+    os.system(f'pip install {install_str}')
 
     update_requirements(req_file)
 
@@ -55,7 +55,9 @@ def install_on_startup(req_file: str = 'cloud_requirements.txt') -> None:
 
     # verify if the file exists
     if not os.path.exists(req_file):
-        raise Exception('cloud_requirements.txt file not found')
+        # raise Exception('cloud_requirements.txt file not found')
+        print('cloud_requirements.txt file not found, start with default requirements')
+        os.system(f'cp requirements.txt {req_file}')
 
     libs = []
     with open(req_file, 'r') as f:
