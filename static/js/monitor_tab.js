@@ -184,28 +184,50 @@ const populateFunctionDetails = (func) => {
   funcStoreElement.textContent = func.key;
 
   const params = func.params;
-  
   const filteredParams = Array.isArray(params) ? params.filter(param => param !== '') : [];
-  
-  // Append a text "No parameters" if there are no parameters
+
+  // Create thead element
+  const thead = document.createElement('thead');
+  const headerRow = document.createElement('tr');
+  const headers = ['Params', 'Type', 'Value'];
+  headers.forEach(headerText => {
+    const th = document.createElement('th');
+    th.textContent = headerText;
+    th.style.textAlign = 'center';
+    headerRow.appendChild(th);
+  });
+  thead.appendChild(headerRow);
+
+  // Create tbody element
+  const tbody = document.createElement('tbody');
+
+  // Append a text "No parameters required" if there are no parameters
   if (filteredParams.length === 0) {
-    const noParams = document.createElement("p");
-    noParams.textContent = "No parameters required";
-    paramsTable.appendChild(noParams);
-    return;
+    const row = document.createElement('tr');
+    const noParamsCell = document.createElement('td');
+    noParamsCell.textContent = 'No parameters required';
+    noParamsCell.colSpan = 3;
+    noParamsCell.style.textAlign = 'center';
+
+    row.appendChild(noParamsCell);
+    tbody.appendChild(row);
+  } else {
+    const dataTypes = ["String", "Number", "Boolean", "Object", "Array"]; // Add more data types as needed
+
+    filteredParams.forEach(param => {
+      const row = createParamRow(param, dataTypes);
+      tbody.appendChild(row);
+    });
   }
 
-  const dataTypes = ["String", "Number", "Boolean", "Object", "Array"]; // Add more data types as needed
-
-  for (let i = 0; i < params.length; i++) {
-    const row = createParamRow(params[i], dataTypes);
-    paramsTable.appendChild(row);
-  }
+  // Append thead and tbody to paramsTable
+  paramsTable.appendChild(thead);
+  paramsTable.appendChild(tbody);
 };
 
 // Create a row for a single parameter
 const createParamRow = (param, dataTypes) => {
-  const row = document.createElement("tr");
+  const row = document.createElement('tr');
 
   const nameCell = createNameCell(param);
   row.appendChild(nameCell);
@@ -221,14 +243,15 @@ const createParamRow = (param, dataTypes) => {
 
 // Create the name cell for a parameter
 const createNameCell = (param) => {
-  const nameCell = document.createElement("th");
+  const nameCell = document.createElement('td');
   nameCell.textContent = param;
+  nameCell.style.textAlign = 'center';
   return nameCell;
 };
 
 // Create the data type cell for a parameter
 const createDataTypeCell = (dataTypes) => {
-  const dataTypeCell = document.createElement("th");
+  const dataTypeCell = document.createElement('td');
   const select = createDataTypeSelect(dataTypes);
   dataTypeCell.appendChild(select);
   return dataTypeCell;
@@ -236,7 +259,7 @@ const createDataTypeCell = (dataTypes) => {
 
 // Create the data type select for a parameter
 const createDataTypeSelect = (dataTypes) => {
-  const select = document.createElement("select");
+  const select = document.createElement('select');
   select.classList.add("data-type-select");
   dataTypes.forEach((dataType) => {
     const option = createOption(dataType);
@@ -247,7 +270,7 @@ const createDataTypeSelect = (dataTypes) => {
 
 // Create an option for the data type select
 const createOption = (dataType) => {
-  const option = document.createElement("option");
+  const option = document.createElement('option');
   option.value = dataType;
   option.text = dataType;
   return option;
@@ -255,7 +278,7 @@ const createOption = (dataType) => {
 
 // Create the value cell for a parameter
 const createValueCell = () => {
-  const valueCell = document.createElement("th");
+  const valueCell = document.createElement('td');
   const input = createInput();
   valueCell.appendChild(input);
   return valueCell;
@@ -263,7 +286,7 @@ const createValueCell = () => {
 
 // Create the input for the value cell
 const createInput = () => {
-  const input = document.createElement("input");
+  const input = document.createElement('input');
   input.type = "text";
   input.classList.add("param-value-input");
   return input;

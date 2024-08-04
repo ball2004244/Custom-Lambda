@@ -13,6 +13,13 @@ h2 {
   margin: 10px;
 }
 
+h3 {
+  font-weight: bold;
+  font-size: 20px;
+  text-align: center;
+  margin: 10px;
+}
+
 p {
   margin: 10px;
 }
@@ -75,17 +82,82 @@ body {
   color: #efdbcb;
 }
 
+/* General styles for the display container */
 #display-res-container {
   display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 50%;
-  width: 50%;
+  padding: 20px;
   background-color: #4bb4de;
   color: #efdbcb;
-  z-index: 100;
-  border-radius: 5px;
+  border-radius: 10px;
+}
+
+#display-res-container h1,
+#display-res-container h2 {
+  margin: 10px 0;
+}
+
+#display-params {
+  width: 100%;
+  margin: 20px 0;
+}
+
+#params-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#params-table th,
+#params-table td {
+  padding: 10px;
+  border: 1px solid #3b8ac4;
+  color: #3b8ac4;
+  text-align: left;
+  background-color: #efdbcb; /* Add background color to table cells */
+}
+
+/* Remove background and border from the parameter type dropdown */
+.data-type-select {
+  padding: 5px;
+  font-size: 16px;
+  border: none;
+  background-color: #efdbcb; /* Match the background color of the table cells */
+  color: #3b8ac4;
+  outline: none;
+  width: 100%;
+  text-align: center; /* Center the dropdown content */
+}
+
+/* Remove background and border from the parameter value input */
+.param-value-input {
+  padding: 5px;
+  width: 100%;
+  font-size: 16px;
+  border: none;
+  background-color: transparent;
+  color: #3b8ac4;
+  outline: none;
+  text-align: left; /* Center the input content */
+}
+
+#action-btns {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin: 20px 0;
+}
+
+#display-res {
+  word-break: break-all; /* Break long words to fit within the container */
+  word-wrap: break-word; /* Ensure long words break */
+  overflow-wrap: break-word; /* Break long words to fit within the container */
+  color: #efdbcb;
+  margin: 10px 0;
+  padding: 35px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #add-lib-tab > #lib-name > #add-lib-input {
@@ -137,9 +209,7 @@ button[active] {
   border: #345da7 1px solid;
 }
 
-/* BEGIN: Add dark mode styles */
 .monaco-editor.vs-dark .monaco-editor-background,
 .monaco-editor.vs-dark .monaco-editor {
   background-color: #1e1e1e;
 }
-/* END: Add dark mode styles */
