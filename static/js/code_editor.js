@@ -9,6 +9,20 @@ import config from "./config.js";
  */
 const submitBtn = document.getElementById("submit-btn");
 
+const default_code = `def hello():
+\t'''
+\tNote that, the submit function must be in this format:
+\t
+\t***
+\tdef function_name(b, c, d):
+\t\treturn e
+\t***
+\t
+\tOtherwise, the code wont run as expected
+\t'''
+\treturn "Hello World!"
+`;
+
 // Configure require.js paths
 require.config({
   paths: {
@@ -18,7 +32,7 @@ require.config({
 
 // Load Monaco Editor
 require(["vs/editor/editor.main"], () => {
-  let content = "def function_name():\n\t# Your Python code here";
+  let content = default_code;
   const editor = monaco.editor.create(
     document.getElementById("monaco-container"),
     {
@@ -44,13 +58,17 @@ require(["vs/editor/editor.main"], () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(send_data),
+        body: JSON.stringify({
+          content: content,
+          username: "test",
+          password: "test",
+        }),
       });
 
       const data = await response.json();
       console.log(data);
       //   clear the editor
-      editor.setValue("def function_name():\n\t# Your Python code here");
+      editor.setValue(default_code);
     } catch (error) {
       console.error("Error:", error);
     }

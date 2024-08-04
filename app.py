@@ -104,7 +104,7 @@ def get_func(func_name: str) -> dict:
     finally:
         return res
 
-@router.get("/functions")
+@router.post("/users/functions")
 def get_user_funcs(get_request: GetUserFuncsRequest) -> dict:
     '''
     Get all serverless functions from functions_store
@@ -136,6 +136,7 @@ def add_new_func(func_request: CreateFuncRequest) -> dict:
     res = RESPONSE_TEMPLATE.copy()
     try:
         content = func_request.content
+        print('Function request:', func_request)
         output = add_func(content, target_dir='functions_store', author=func_request.username,
                           password=func_request.password)
         if output is None:
@@ -226,7 +227,7 @@ def get_installed_libs() -> dict:
     try:
         res['status'] = 'success'
         res['message'] = 'All installed libraries retrieved successfully'
-        res['data'] = get_libs(f'{CONF_STORE}/cloud_requirements.txt')
+        res['data'] = get_libs()
 
     except Exception as e:
         res['message'] = str(e)
@@ -242,6 +243,8 @@ def install_libraries(lib_request: LibInstallRequest) -> dict:
     res = RESPONSE_TEMPLATE.copy()
     try:
         libs = lib_request.libs
+        print('Installing libraries:', libs)
+        
         install_libs(libs, f'{CONF_STORE}/cloud_requirements.txt')
         res['status'] = 'success'
         res['message'] = 'Successfully installed libraries'

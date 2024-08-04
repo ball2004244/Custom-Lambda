@@ -29,28 +29,32 @@ deleteList.addEventListener("click", () => {
 // Upload preinstall list to server
 const uploadList = document.getElementById("upload-libs-btn");
 uploadList.addEventListener("click", async () => {
-  const lib_list = Array.from(preInstallList.children).map(
+  const libList = Array.from(preInstallList.children).map(
     (li) => li.textContent
   );
-  const send_data = { libs: lib_list };
-  const response = await fetch(`${config.API_URL}/libs`, {
-    method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(send_data),
-  });
-  const data = await response.json();
-  console.log(data);
-  preInstallList.innerHTML = "";
+  const sendData = { libs: libList };
+  try {
+    const response = await fetch(`${config.API_URL}/libs`, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(sendData),
+    });
+    const data = await response.json();
+    console.log(data);
+    preInstallList.innerHTML = "";
+  } catch (error) {
+    console.error("Error uploading libraries:", error);
+  }
 });
 
 // Libraries container element
 const libsContainer = document.getElementById("libs-container");
 
 // Get all libraries
-const libsData = async () => {
+const fetchLibsData = async () => {
   try {
     const response = await fetch(`${config.API_URL}/libs`, {
       method: "GET",
@@ -59,15 +63,20 @@ const libsData = async () => {
     const data = await response.json();
     return data.data;
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching libraries:", error);
+    return [];
   }
 };
 
 // Display data as a list
 const displayData = (libs) => {
+  // Convert the string of libraries into an array
+  if (typeof libs === "string") {
+    libs = libs.split("\n").filter((lib) => lib.trim() !== "");
+  }
+
   // Check if there are no libraries
-  //   then display a message
-  if (libs === null || libs === undefined || libs.length === 0) {
+  if (!Array.isArray(libs) || libs.length === 0) {
     libsContainer.innerHTML = "<p><strong>No libraries found</strong></p>";
     return;
   }
@@ -88,6 +97,6 @@ const displayData = (libs) => {
 
 // Get data every 5 seconds
 setInterval(async () => {
-  const libs = await libsData();
+  const libs = await fetchLibsData();
   displayData(libs);
 }, 5000);

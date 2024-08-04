@@ -22,15 +22,32 @@ const resContainer = document.getElementById("display-res");
 // Fetch all cloud functions from the server
 const fetchFunctions = async () => {
   try {
-    const response = await fetch(`${config.API_URL}/functions`, {
-      method: "GET",
+    const response = await fetch(`${config.API_URL}/users/functions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: "test",
+        password: "test"
+      }),
       credentials: "same-origin",
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.detail && errorData.detail[0] && errorData.detail[0].type === "missing") {
+        console.error("Field required error on fetching user functions: ", errorData);
+      } else {
+        console.error("An error occurred on fetching user functions: ", errorData);
+      }
+      return; // Exit the function after handling the error
+    }
 
     const data = await response.json();
     return data.data.functions;
   } catch (error) {
-    console.error(error);
+    console.error("Fetch error: ", error);
   }
 };
 
@@ -167,17 +184,50 @@ const populateFunctionDetails = (func) => {
   funcStoreElement.textContent = func.key;
 
   const params = func.params;
-  const dataTypes = ["String", "Number", "Boolean", "Object", "Array"]; // Add more data types as needed
+  const filteredParams = Array.isArray(params) ? params.filter(param => param !== '') : [];
 
-  for (let i = 0; i < params.length; i++) {
-    const row = createParamRow(params[i], dataTypes);
-    paramsTable.appendChild(row);
+  // Create thead element
+  const thead = document.createElement('thead');
+  const headerRow = document.createElement('tr');
+  const headers = ['Params', 'Type', 'Value'];
+  headers.forEach(headerText => {
+    const th = document.createElement('th');
+    th.textContent = headerText;
+    th.style.textAlign = 'center';
+    headerRow.appendChild(th);
+  });
+  thead.appendChild(headerRow);
+
+  // Create tbody element
+  const tbody = document.createElement('tbody');
+
+  // Append a text "No parameters required" if there are no parameters
+  if (filteredParams.length === 0) {
+    const row = document.createElement('tr');
+    const noParamsCell = document.createElement('td');
+    noParamsCell.textContent = 'No parameters required';
+    noParamsCell.colSpan = 3;
+    noParamsCell.style.textAlign = 'center';
+
+    row.appendChild(noParamsCell);
+    tbody.appendChild(row);
+  } else {
+    const dataTypes = ["String", "Number", "Boolean", "Object", "Array"]; // Add more data types as needed
+
+    filteredParams.forEach(param => {
+      const row = createParamRow(param, dataTypes);
+      tbody.appendChild(row);
+    });
   }
+
+  // Append thead and tbody to paramsTable
+  paramsTable.appendChild(thead);
+  paramsTable.appendChild(tbody);
 };
 
 // Create a row for a single parameter
 const createParamRow = (param, dataTypes) => {
-  const row = document.createElement("tr");
+  const row = document.createElement('tr');
 
   const nameCell = createNameCell(param);
   row.appendChild(nameCell);
@@ -193,14 +243,15 @@ const createParamRow = (param, dataTypes) => {
 
 // Create the name cell for a parameter
 const createNameCell = (param) => {
-  const nameCell = document.createElement("th");
+  const nameCell = document.createElement('td');
   nameCell.textContent = param;
+  nameCell.style.textAlign = 'center';
   return nameCell;
 };
 
 // Create the data type cell for a parameter
 const createDataTypeCell = (dataTypes) => {
-  const dataTypeCell = document.createElement("th");
+  const dataTypeCell = document.createElement('td');
   const select = createDataTypeSelect(dataTypes);
   dataTypeCell.appendChild(select);
   return dataTypeCell;
@@ -208,7 +259,7 @@ const createDataTypeCell = (dataTypes) => {
 
 // Create the data type select for a parameter
 const createDataTypeSelect = (dataTypes) => {
-  const select = document.createElement("select");
+  const select = document.createElement('select');
   select.classList.add("data-type-select");
   dataTypes.forEach((dataType) => {
     const option = createOption(dataType);
@@ -219,7 +270,7 @@ const createDataTypeSelect = (dataTypes) => {
 
 // Create an option for the data type select
 const createOption = (dataType) => {
-  const option = document.createElement("option");
+  const option = document.createElement('option');
   option.value = dataType;
   option.text = dataType;
   return option;
@@ -227,7 +278,7 @@ const createOption = (dataType) => {
 
 // Create the value cell for a parameter
 const createValueCell = () => {
-  const valueCell = document.createElement("th");
+  const valueCell = document.createElement('td');
   const input = createInput();
   valueCell.appendChild(input);
   return valueCell;
@@ -235,7 +286,7 @@ const createValueCell = () => {
 
 // Create the input for the value cell
 const createInput = () => {
-  const input = document.createElement("input");
+  const input = document.createElement('input');
   input.type = "text";
   input.classList.add("param-value-input");
   return input;
@@ -254,7 +305,7 @@ const clearExecResult = () => {
 
 // Populate the execution result
 const populateExecResult = (res) => {
-  const returnResult = createResultElement("Return Result", res.return_result);
+  const returnResult = createResultElement("Return Result", res.return_value);
   resContainer.appendChild(returnResult);
 
   const stdout = createResultElement("Console Output", res.stdout);
@@ -306,19 +357,37 @@ const getParams = () => {
 
 // Send the execute request to the server
 const sendExecuteRequest = async (funcName, target, params) => {
+  const filteredParams = Array.isArray(params) ? params.filter(param => param !== '') : [];
+
   const send_data = {
-    params: params,
+    params: filteredParams,
     target: target,
+    username: "test",
+    password: "test",
   };
 
-  return await fetch(`${config.API_URL}/execute/${funcName}`, {
-    method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(send_data),
-  });
+  try {
+    const response = await fetch(`${config.API_URL}/execute/${funcName}`, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(send_data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Server error on executing function: ", errorData);
+    }
+
+    return response;
+
+  } catch (error) {
+    console.error("Error on executing function: ", error);
+    return response;
+  }
+
 };
 
 // Close the function details
