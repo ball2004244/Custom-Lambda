@@ -22,15 +22,32 @@ const resContainer = document.getElementById("display-res");
 // Fetch all cloud functions from the server
 const fetchFunctions = async () => {
   try {
-    const response = await fetch(`${config.API_URL}/functions`, {
-      method: "GET",
+    const response = await fetch(`${config.API_URL}/users/functions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: "test",
+        password: "test"
+      }),
       credentials: "same-origin",
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.detail && errorData.detail[0] && errorData.detail[0].type === "missing") {
+        console.error("Field required error on fetching user functions: ", errorData);
+      } else {
+        console.error("An error occurred on fetching user functions: ", errorData);
+      }
+      return; // Exit the function after handling the error
+    }
 
     const data = await response.json();
     return data.data.functions;
   } catch (error) {
-    console.error(error);
+    console.error("Fetch error: ", error);
   }
 };
 
@@ -254,7 +271,8 @@ const clearExecResult = () => {
 
 // Populate the execution result
 const populateExecResult = (res) => {
-  const returnResult = createResultElement("Return Result", res.return_result);
+  console.log(res);
+  const returnResult = createResultElement("Return Result", res.return_value);
   resContainer.appendChild(returnResult);
 
   const stdout = createResultElement("Console Output", res.stdout);
@@ -309,16 +327,32 @@ const sendExecuteRequest = async (funcName, target, params) => {
   const send_data = {
     params: params,
     target: target,
+    username: "test",
+    password: "test",
   };
 
-  return await fetch(`${config.API_URL}/execute/${funcName}`, {
-    method: "POST",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(send_data),
-  });
+  try {
+    const response = await fetch(`${config.API_URL}/execute/${funcName}`, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(send_data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Server error on executing function: ", errorData);
+    }
+
+    return response;
+
+  } catch (error) {
+    console.error("Error on executing function: ", error);
+    return response;
+  }
+
 };
 
 // Close the function details

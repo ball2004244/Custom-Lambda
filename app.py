@@ -104,7 +104,7 @@ def get_func(func_name: str) -> dict:
     finally:
         return res
 
-@router.get("/functions")
+@router.post("/users/functions")
 def get_user_funcs(get_request: GetUserFuncsRequest) -> dict:
     '''
     Get all serverless functions from functions_store
