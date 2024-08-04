@@ -1,10 +1,18 @@
 from typing import List
 import os
+import subprocess
 
 '''
 This file handles all the library management in the virtual environment
 '''
 
+def get_libs() -> List[str]:
+    '''
+    Get all installed libraries in the virtual environment
+    '''
+    result = subprocess.run(['pip', 'freeze'], stdout=subprocess.PIPE)
+    installed_libs = result.stdout.decode('utf-8').split('\n')
+    return [lib for lib in installed_libs if lib]  # Filter out empty strings
 
 def install_libs(libs: List[str], req_file: str = 'cloud_requirements.txt') -> None:
     '''
@@ -14,39 +22,38 @@ def install_libs(libs: List[str], req_file: str = 'cloud_requirements.txt') -> N
     installed_libs = get_libs()
     libs_to_install = []
 
-    # Iterate over the libraries to extract non-existing ones
-    for lib in libs:
-        if any(lib in installed_lib for installed_lib in installed_libs):
-            continue
+    # Sort both lists
+    libs.sort()
+    installed_libs.sort()
 
-        # If not yet installed, then install it
-        libs_to_install.append(lib)
+    # Use two-pointer technique to find non-existing libraries
+    i, j = 0, 0
+    while i < len(libs) and j < len(installed_libs):
+        if libs[i] < installed_libs[j]:
+            libs_to_install.append(libs[i])
+            i += 1
+        elif libs[i] > installed_libs[j]:
+            j += 1
+        else:
+            i += 1
+            j += 1
 
-    install_str = ' '.join(libs_to_install)
-    os.system(f'pip install {install_str}')
+    # Add remaining libraries that are not in installed_libs
+    while i < len(libs):
+        libs_to_install.append(libs[i])
+        i += 1
+
+    if libs_to_install:
+        install_str = ' '.join(libs_to_install)
+        os.system(f'pip install {install_str}')
 
     update_requirements(req_file)
-
-
-def get_libs(req_file: str = 'cloud_requirements.txt') -> List[str]:
-    '''
-    Get all installed libraries in the virtual environment, then save to requirements.txt
-    '''
-    # use popen without passing the file to pip freeze
-    libs = os.popen('pip freeze').read()
-
-    # save to requirements.txt
-    update_requirements(req_file)
-
-    return libs
-
 
 def update_requirements(file_path: str) -> None:
     '''
     Update requirements.txt file with all installed libraries, instead of manually updating it
     '''
     os.system(f'pip freeze > {file_path}')
-
 
 def install_on_startup(req_file: str = 'cloud_requirements.txt') -> None:
     '''
@@ -61,9 +68,8 @@ def install_on_startup(req_file: str = 'cloud_requirements.txt') -> None:
 
     libs = []
     with open(req_file, 'r') as f:
-        libs = f.readlines()
+        libs = [lib.strip() for lib in f.readlines()]
     install_libs(libs)
-
 
 if __name__ == '__main__':
     print(get_libs())

@@ -226,7 +226,7 @@ def get_installed_libs() -> dict:
     try:
         res['status'] = 'success'
         res['message'] = 'All installed libraries retrieved successfully'
-        res['data'] = get_libs(f'{CONF_STORE}/cloud_requirements.txt')
+        res['data'] = get_libs()
 
     except Exception as e:
         res['message'] = str(e)
@@ -242,6 +242,8 @@ def install_libraries(lib_request: LibInstallRequest) -> dict:
     res = RESPONSE_TEMPLATE.copy()
     try:
         libs = lib_request.libs
+        print('Installing libraries:', libs)
+        
         install_libs(libs, f'{CONF_STORE}/cloud_requirements.txt')
         res['status'] = 'success'
         res['message'] = 'Successfully installed libraries'
