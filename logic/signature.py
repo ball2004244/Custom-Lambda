@@ -86,6 +86,7 @@ def get_func_names_by_author(target_dir: str, target_file: str, author: str, pas
             if f'#start-function: {FUNC_DELIMITER}, function: ' in line:
                 func_name = line.split(',')[1].split('function: ')[1]
                 verified_author = verify_author(author, password, func_name, target_dir, target_file)
+                
                 if verified_author is None:
                     return None
                 
@@ -167,23 +168,36 @@ def insert_func_to_invokee(src: str, invokee: str) -> Union[str, None]:
 
 def verify_author(author: str, password: str, func_name: str, target_dir: str, target_file: str) -> Union[bool, None]:
     '''
-    Check if the author and password are correct for a specific function
-    True - User is authorized with the correct function
-    False - User is not authorized with the correct function
-    None - User is not exists
+    Check if the author and password are correct for a specific function.
+    True - User is authorized with the correct function.
+    False - User is not authorized with the correct function.
+    None - User does not exist.
     '''
-
-    i = 0
-    lines = []
-    with open(f'{target_dir}/{target_file}.py', 'r') as f:
-        lines = f.readlines()
-
-    for i in range(1, len(lines)):
-        # Check if the author exists
-        if f'#author: {author}, creds: ' in lines[i]:
-            hashed_password = lines[i].split('creds: ')[1].strip()
-
+    try:
+        with open(f'{target_dir}/{target_file}.py', 'r') as file:
+            lines = file.readlines()
+    
+        for i, line in enumerate(lines):
+            # Check if the author exists
+            if f'#author: {author}, creds: ' not in line:
+                continue
+    
+            hashed_password = line.split('creds: ')[1].strip()
+    
             # Check if the function is correct
-            if f'#start-function: {FUNC_DELIMITER}, function: {func_name}' in lines[i-1]:
-                return check_password(password, hashed_password)
-    return None
+            if i <= 0 or f'#start-function: {FUNC_DELIMITER}, function: {func_name}' not in lines[i - 1]:
+                continue
+    
+            print(f"Author: {author}, Password: {password}, Hashed Password: {hashed_password}")
+            print(f'Checking password for {func_name}...{check_password(password, hashed_password)}')
+            return check_password(password, hashed_password)
+        
+        # Author or function not found
+        return None
+    
+    except FileNotFoundError:
+        print(f"File {target_file}.py not found in directory {target_dir}.")
+        return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None

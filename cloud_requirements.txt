@@ -9,6 +9,7 @@ exceptiongroup==1.2.0
 fastapi==0.109.2
 h11==0.14.0
 idna==3.6
+numpy==2.0.1
 psutil==5.9.8
 pydantic==2.6.1
 pydantic_core==2.16.2

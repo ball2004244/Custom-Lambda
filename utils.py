@@ -32,7 +32,7 @@ def create_py_file(target_dir: str, filename: str='0.py') -> None:
     '''
     file_path = os.path.join(target_dir, filename)
     with open(file_path, 'w') as file:
-        file.write("# Python file created using create_py_file function")
+        file.write("# Python file created using create_py_file function\n")
     print(f"Python file '{filename}' created successfully.")
 
 def create_dir(target_dir: str) -> None:

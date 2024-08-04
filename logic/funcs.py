@@ -80,7 +80,7 @@ def get_funcs(target_dir: str, author: str='admin', password: str='admin') -> Un
 
             # add functions of each file to a dictionary
             out_list = []
-            funcc_list = None
+            func_lst = None
             formatted_file = file.split('.')[0]
             
             # either return all funcs of 1 user or return all funcs in the system
