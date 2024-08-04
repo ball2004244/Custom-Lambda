@@ -58,7 +58,11 @@ require(["vs/editor/editor.main"], () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(send_data),
+        body: JSON.stringify({
+          content: content,
+          username: "test",
+          password: "test",
+        }),
       });
 
       const data = await response.json();

@@ -184,6 +184,17 @@ const populateFunctionDetails = (func) => {
   funcStoreElement.textContent = func.key;
 
   const params = func.params;
+  
+  const filteredParams = Array.isArray(params) ? params.filter(param => param !== '') : [];
+  
+  // Append a text "No parameters" if there are no parameters
+  if (filteredParams.length === 0) {
+    const noParams = document.createElement("p");
+    noParams.textContent = "No parameters required";
+    paramsTable.appendChild(noParams);
+    return;
+  }
+
   const dataTypes = ["String", "Number", "Boolean", "Object", "Array"]; // Add more data types as needed
 
   for (let i = 0; i < params.length; i++) {
@@ -271,7 +282,6 @@ const clearExecResult = () => {
 
 // Populate the execution result
 const populateExecResult = (res) => {
-  console.log(res);
   const returnResult = createResultElement("Return Result", res.return_value);
   resContainer.appendChild(returnResult);
 
@@ -324,8 +334,10 @@ const getParams = () => {
 
 // Send the execute request to the server
 const sendExecuteRequest = async (funcName, target, params) => {
+  const filteredParams = Array.isArray(params) ? params.filter(param => param !== '') : [];
+
   const send_data = {
-    params: params,
+    params: filteredParams,
     target: target,
     username: "test",
     password: "test",

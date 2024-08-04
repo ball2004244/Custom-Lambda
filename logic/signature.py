@@ -83,17 +83,19 @@ def get_func_names_by_author(target_dir: str, target_file: str, author: str, pas
     with open(f'{target_dir}/{target_file}.py', 'r') as f:
         lines = f.readlines()
         for line in lines:
-            if f'#start-function: {FUNC_DELIMITER}, function: ' in line:
-                func_name = line.split(',')[1].split('function: ')[1]
-                verified_author = verify_author(author, password, func_name, target_dir, target_file)
-                
-                if verified_author is None:
-                    return None
-                
-                if not verified_author:
-                    continue
+            # check if the line is a function signature
+            if not f'#start-function: {FUNC_DELIMITER}, function: ' in line:
+                continue
 
-                func_names.add(func_name)
+            func_name = line.split(',')[1].split('function: ')[1]
+            
+            # then need to check if the author is correct
+            verified_author = verify_author(author, password, func_name, target_dir, target_file)
+            
+            if verified_author is None or not verified_author:
+                continue
+
+            func_names.add(func_name)
 
     if len(func_names) == 0:
         return None
@@ -187,9 +189,7 @@ def verify_author(author: str, password: str, func_name: str, target_dir: str, t
             # Check if the function is correct
             if i <= 0 or f'#start-function: {FUNC_DELIMITER}, function: {func_name}' not in lines[i - 1]:
                 continue
-    
-            print(f"Author: {author}, Password: {password}, Hashed Password: {hashed_password}")
-            print(f'Checking password for {func_name}...{check_password(password, hashed_password)}')
+
             return check_password(password, hashed_password)
         
         # Author or function not found

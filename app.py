@@ -136,6 +136,7 @@ def add_new_func(func_request: CreateFuncRequest) -> dict:
     res = RESPONSE_TEMPLATE.copy()
     try:
         content = func_request.content
+        print('Function request:', func_request)
         output = add_func(content, target_dir='functions_store', author=func_request.username,
                           password=func_request.password)
         if output is None:

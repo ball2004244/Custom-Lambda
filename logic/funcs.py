@@ -55,15 +55,14 @@ def func_exists(func_name: str, target_dir: str) -> bool:
     return False
 
 
-def get_funcs(target_dir: str, author: str='admin', password: str='admin') -> Union[Dict[str, List[str]], None]:
+def get_funcs(target_dir: str, author: str = 'admin', password: str = 'admin') -> Union[Dict[str, List[str]], None]:
     '''
     Get all serverless functions from a python file
-    Permission: ADMIN, NORMAL USER
+    Permission: ADMIN, USER
     '''
     # Mock data for admin
     admin_username = 'admin'
     admin_pass = 'admin'
-    
 
     funcs = {}
     py_files = get_py_files(target_dir)
@@ -71,7 +70,7 @@ def get_funcs(target_dir: str, author: str='admin', password: str='admin') -> Un
     if not py_files:
         create_py_file(target_dir, '0.py')
         return None
-    
+
     for file in py_files:
         with open(f'{target_dir}/{file}', 'r') as f:
             # ignore init file
@@ -82,7 +81,7 @@ def get_funcs(target_dir: str, author: str='admin', password: str='admin') -> Un
             out_list = []
             func_lst = None
             formatted_file = file.split('.')[0]
-            
+
             # either return all funcs of 1 user or return all funcs in the system
             if author == admin_username and password == admin_pass:
                 func_lst = get_all_func_names_by_signature(
@@ -90,7 +89,6 @@ def get_funcs(target_dir: str, author: str='admin', password: str='admin') -> Un
             else:
                 func_lst = get_func_names_by_author(
                     target_dir, formatted_file, author, password)
-                
 
             if func_lst is None:
                 continue
@@ -113,7 +111,7 @@ def get_funcs(target_dir: str, author: str='admin', password: str='admin') -> Un
     return funcs if funcs else None
 
 
-def add_func(func_content: str, target_dir: str, author: str='admin', password: str='admin') -> Union[str, None]:
+def add_func(func_content: str, target_dir: str, author: str = 'admin', password: str = 'admin') -> Union[str, None]:
     '''
     Add a serverless function to a python file,
     return a target file name
@@ -123,7 +121,7 @@ def add_func(func_content: str, target_dir: str, author: str='admin', password: 
     funcs = get_funcs(target_dir)
 
     # Not allow same function name
-    #TODO: Work out so different user can have same function name
+    # TODO: Work out so different user can have same function name
     # if func_exists(func_name, target_dir):
     #     return None
 
@@ -155,7 +153,7 @@ def add_func(func_content: str, target_dir: str, author: str='admin', password: 
     return target_file
 
 
-def invoke_func(func_name: str, params: list, target_dir: str, target_file: str, author: str='admin', password: str='admin') -> Dict[str, Any]:
+def invoke_func(func_name: str, params: list, target_dir: str, target_file: str, author: str = 'admin', password: str = 'admin') -> Dict[str, Any]:
     '''
     Run a serverless function from a function store
     '''
@@ -165,12 +163,13 @@ def invoke_func(func_name: str, params: list, target_dir: str, target_file: str,
     invokee_file = 'invokee.py'
     template_file = 'invokee_template.py'
     return_signature = get_return_signature()
-    user_auth = verify_author(author, password, func_name, target_dir, target_file)
+    user_auth = verify_author(
+        author, password, func_name, target_dir, target_file)
 
     # User not found
     if user_auth is None:
         return None
-    
+
     # Wrong password
     if not user_auth:
         return None
@@ -178,10 +177,8 @@ def invoke_func(func_name: str, params: list, target_dir: str, target_file: str,
     prepare_invokee(func_name, target_dir, target_file,
                     invokee_file, template_file)
 
-
     output = invoke_with_limit(
         invokee_file, params, TIME_LIMIT, MEMORY_LIMIT)
-
 
     stdout, return_value = output['stdout'].split(return_signature)
     decoded_return_value = pickle.loads(
