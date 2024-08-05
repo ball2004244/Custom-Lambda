@@ -27,7 +27,7 @@ cp .env.example .env
 
 ```bash
 docker build -t custom-lambda .
-docker run -d -p 9999:9999 custom-lambda
+docker run -d -p 9999:9999 -v $(pwd):/app custom-lambda
 ```
 
 2. Docker Compose
